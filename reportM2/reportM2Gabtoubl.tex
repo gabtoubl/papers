@@ -1,0 +1,62 @@
+\documentclass{report}
+\usepackage{graphicx}
+\usepackage{fontspec}
+\usepackage{tikz}
+\usepackage[makeroom]{cancel}
+\usepackage[frenchb]{babel}
+
+\title{Mémoire de stage\\
+TITRE DE L'INTITULE DE STAGE}
+\author{Gabriel Toublanc, Master IGIS ITA, $2^{eme}$ année}
+\date{25 Juin 2017}
+\usetikzlibrary{calc, fit, decorations.pathreplacing}
+
+\begin{document}
+  \maketitle\newpage
+  \tableofcontents\newpage
+  \chapter{Introduction}
+    \section{Cadre}
+      Ce mémoire a été rédigé dans le cadre de mon stage de fin de Master IGIS ITA, dans le but de réaliser un rapport complet sur l'ensemble du travail effectué. Ce stage s'est déroulé du $1^{er}$ avril au 30 juin 2017, au sein de l'équipe TIBS du laboratoire LITIS de l'Université de Rouen, dans le batiment Monod puis CurieB sur le campus de Mont-Saint-Aignan. Les travaux de
+      cette équipe portent principalement sur la recherche, l’indexation et l’extraction d’informations
+      pertinentes dans des données biologiques et des systèmes d’information en santé,
+      et offrent donc de nombreuses applications dans ces domaines. Ce stage a été financé par le
+      LITIS, grâce à des fonds alloués par l’Université de Rouen, destinés à permettre l’accueil
+      de stagiaires de seconde année de Master Recherche.
+    \section{Contexte}
+      L'analyse de séquençage ADN appliqué à la Bio-Informatique a connu un développement important dans les années 2000.\\
+      Le séquençage ADN est effectué de deux façons différentes, par le biais de lectures sur des brins d'ADN:
+      \begin{itemize}
+        \setlength{\itemindent}{30mm}
+        \renewcommand{\labelitemi}{$\longrightarrow$}
+        \item \textbf{Les lectures longues} (Nanopore, PacBio, ...)
+        \item \textbf{Les lectures courtes} (Illumina, Roche, ...)
+      \end{itemize}
+      Les \textbf{lectures longues} ont l'avantage de nécessiter que d'\textbf{une petite quantité} d'entre elles pour quadriller le génome d'un être vivant, mais le gros désavantage d'être \textbf{hautement imprécises} (15 à 30 \% d'erreurs)\\
+
+      Les \textbf{lectures courtes}, en revanche, ont le net avantage d'être \textbf{très précises}, avec un taux d'erreur de moins de 1 \%. Leur inconvénient principal est qu'il faut \textbf{de nombreuses lectures} courtes afin de reconstruire le génome, ce qui est coûteux et peu pratique.\\
+
+      Dans les faits, le génome peut être reconstruit grâce à un nombre déraisonnable de lectures courtes, ou en corrigeant les lectures longues grâce aux lectures courtes. Plusieurs \textbf{méthodes de corrections} ont été développées à ce sujet \cite{Morisse2017}.\\
+
+      Afin de pouvoir se passer des lectures courtes, et d'ainsi corriger les lectures longues d'elles-mêmes, une branche de la bioinformatique s'intéresse à l'étude des \textbf{k-mers}.\\
+      PLUS DINFO SUR lE PROBLEME RENCONTRE ICI
+    \newpage
+  \chapter{Comptage des k-mers}
+    \section{K-mers}
+    \section{K-mers espacés}
+    \section{Etat de l'art}
+  \chapter{K-mers espacés à délétion: kmerCount}
+    \newpage
+  \chapter{K-mers espacés à insertion: kmerExpand}
+    \newpage
+  \chapter{kmerDel}
+    \newpage
+  \chapter{MAWS}
+    \newpage
+  \chapter{LCS}
+    \newpage
+  \chapter{Conclusion}
+    \newpage
+  \chapter{Références}
+    \bibliographystyle{unsrt}
+    \bibliography{biblio}
+\end{document}
