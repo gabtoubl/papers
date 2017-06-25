@@ -18,35 +18,34 @@ TITRE DE L'INTITULE DE STAGE}
   \LinesNumbered
   \maketitle\newpage
   \tableofcontents\newpage
-  \chapter{Introduction}
-    \section{Cadre}
-      Ce mémoire a été rédigé dans le cadre de mon stage de fin de Master IGIS ITA, dans le but de réaliser un rapport complet sur l'ensemble du travail effectué. Ce stage s'est déroulé du $1^{er}$ avril au 30 juin 2017, au sein de l'équipe TIBS du laboratoire LITIS de l'Université de Rouen, dans le batiment Monod puis CurieB sur le campus de Mont-Saint-Aignan. Les travaux de
-      cette équipe portent principalement sur la recherche, l’indexation et l’extraction d’informations
-      pertinentes dans des données biologiques et des systèmes d’information en santé,
-      et offrent donc de nombreuses applications dans ces domaines. Ce stage a été financé par le
-      LITIS, grâce à des fonds alloués par l’Université de Rouen, destinés à permettre l’accueil
-      de stagiaires de seconde année de Master Recherche.
-    \section{Contexte}
+  \large
+  \chapter*{Introduction}
+  \addcontentsline{toc}{chapter}{Introduction}
+    \section*{Cadre}
+      Ce mémoire a été rédigé dans le cadre de mon stage de fin de Master IGIS ITA, dans le but de réaliser un rapport complet sur l'ensemble du travail effectué. Ce stage s'est déroulé du $1^{er}$ avril au 30 juin 2017, au sein de l'équipe TIBS du laboratoire LITIS de l'Université de Rouen, dans le batiment Monod puis CurieB sur le campus de Mont-Saint-Aignan.\\
+
+      Les travaux de cette équipe portent principalement sur la recherche, l’indexation et l’extraction d’informations pertinentes dans des données biologiques et des systèmes d’information en santé, et offrent donc de nombreuses applications dans ces domaines.\\
+
+      Ce stage a été financé par le LITIS, grâce à des fonds alloués par l’Université de Rouen, destinés à permettre l’accueil de stagiaires de seconde année de Master Recherche.
+    \section*{Contexte}
       L'analyse de séquençage ADN appliqué à la Bio-Informatique a connu un développement important dans les années 2000.\\
-      Le séquençage ADN est effectué de deux façons différentes, par le biais de lectures sur des brins d'ADN:
+      Le séquençage ADN est effectué de deux façons différentes, par le biais de lectures sur des brins d'ADN:\\
       \begin{itemize}
-        \setlength{\itemindent}{30mm}
-        \renewcommand{\labelitemi}{$\longrightarrow$}
         \item \textbf{Les lectures longues} (Nanopore, PacBio, ...)
         \item \textbf{Les lectures courtes} (Illumina, Roche, ...)
-      \end{itemize}
-      Les \textbf{lectures longues} ont l'avantage de nécessiter que d'\textbf{une petite quantité} d'entre elles pour quadriller le génome d'un être vivant, mais le gros désavantage d'être \textbf{hautement imprécises} (15 à 30 \% d'erreurs)\\
+      \end{itemize}\bigskip
 
-      Les \textbf{lectures courtes}, en revanche, ont le net avantage d'être \textbf{très précises}, avec un taux d'erreur de moins de 1 \%. Leur inconvénient principal est qu'il faut \textbf{de nombreuses lectures} courtes afin de reconstruire le génome, ce qui est coûteux et peu pratique.\\
+      Les lectures longues ont l'avantage de nécessiter que d'une petite quantité d'entre elles pour quadriller le génome d'un être vivant, mais le gros désavantage d'être hautement imprécises (15 à 30 \% d'erreurs)\\
 
-      Dans les faits, le génome peut être reconstruit grâce à un nombre déraisonnable de lectures courtes, ou en corrigeant les lectures longues grâce aux lectures courtes. Plusieurs \textbf{méthodes de corrections} ont été développées à ce sujet \cite{Morisse2017}.\\
+      Les lectures courtes, en revanche, ont le net avantage d'être très précises, avec un taux d'erreur de moins de 1 \%. Leur inconvénient principal est qu'il faut de nombreuses lectures courtes afin de reconstruire le génome, ce qui est coûteux et peu pratique.\\
 
-      Afin de pouvoir se passer des lectures courtes, et d'ainsi corriger les lectures longues d'elles-mêmes, une branche de la bioinformatique s'intéresse à l'étude des \textbf{k-mers}.\\
-      PLUS DINFO SUR lE PROBLEME RENCONTRE ICI
+      Dans les faits, le génome peut être reconstruit grâce à un nombre déraisonnable de lectures courtes, ou en corrigeant les lectures longues grâce aux lectures courtes. Plusieurs méthodes de corrections ont été développées à ce sujet \cite{Morisse2017}.\\
+
+      Afin de pouvoir se passer des lectures courtes, et d'ainsi corriger les lectures longues d'elles-mêmes, une branche de la bioinformatique s'intéresse à l'étude des k-mers.\\
     \newpage
   \chapter{Comptage des k-mers}
     \section{K-mers}
-      Les \textbf{k-mers} sont les facteurs de taille $\mathbf{k}$ d'une séquence ADN donnée. Pour une lecture de taille $\mathbf{L}$, on a donc $\mathbf{L - k + 1}$ k-mers possibles.\\
+      Les k-mers sont les facteurs de taille $\mathbf{k}$ d'une séquence ADN donnée. Pour une lecture de taille $\mathbf{L}$, on a donc $\mathbf{L - k + 1}$ k-mers possibles.\bigskip\\
       \textbf{Ex:} Avec une séquence $x = AACCGGTT$, on a les $k$-mers de taille $6$ ($6$-mers) suivants:\\
       \begin{center}\begin{tikzpicture}
         \coordinate (s) at (0, 2);
@@ -68,21 +67,21 @@ TITRE DE L'INTITULE DE STAGE}
         \node[draw,rectangle,red,fit=(y3) (y8)] {};
         \node[draw,rectangle,red,fit=(z4) (z9)] {};
       \end{tikzpicture}\end{center}
-      \textbf{6-mers:} \{AACCGG, ACCGGT, CCGGTT\}\\
-      Afin d'énumérer les k-mers de grands jeux de données, divers outils logiciels ont été développés. L'objectif de ces outils est d'extraire les k-mers de façon à \textbf{grouper} les doublons, d'avoir un \textbf{temps d'exécution} viable et d'utiliser le moins d'\textbf{espace mémoire} possible.\\
+      \textbf{6-mers:} \{AACCGG, ACCGGT, CCGGTT\}\bigskip\\
 
-      Le logiciel \textbf{Jellyfish} \cite{Marcais2011} surpasse ses concurrents dans ce domaine, avec des meilleures performances bien supérieures, tout facteur confondu.\\
+      Afin d'énumérer les k-mers de grands jeux de données, divers outils logiciels ont été développés. L'objectif de ces outils est d'extraire les k-mers de façon à grouper les doublons, d'avoir un temps d'exécution viable et d'utiliser le moins d'espace mémoire possible.\\
 
-      Les k-mers ainsi extraits sont principalement utilisés pour \textbf{l'alignement et l'assemblage} de lectures.\\
+      Le logiciel \textbf{Jellyfish} \cite{Marcais2011} surpasse ses concurrents dans ce domaine, avec des performances bien supérieures, tout facteur confondu.\\
 
-      Dans le cas présent, l'utilisation des k-mers a pour but de \textbf{trouver des répétitions} au sein des lectures longues afin de pouvoir \textbf{identifier les nucléotides erronées}, afin de pouvoir les corriger.
-      \newpage
+      Les k-mers ainsi extraits sont principalement utilisés pour l'alignement et l'assemblage de lectures.\\
+
+      Dans le cas présent, l'utilisation des k-mers a pour but de trouver des répétitions au sein des lectures longues afin de pouvoir identifier les nucléotides erronées, afin de pouvoir les corriger.
     \section{K-mers espacés}
-      Les \textbf{k-mers espacés} sont utilisés afin de simuler les erreurs d'insertions et de délétions sur les lectures longues.\\
+      Les k-mers espacés sont utilisés afin de simuler les erreurs d'insertions et de délétions sur les lectures longues.\\
       Au lieu de prendre les facteurs de taille k d'une séquence, on va sélectionner les k-mers espacés selon un motif précis.\\
       \subsection{K-mers espacés à délétion}
-        Avec les \textbf{k-mers espacés à délétion}, chaque $\mathbf{0}$ du motif correspond à une nucléotide à supprimer.\\
-        Par ex, un motif $\mathbf{m=111011}$ créera tous les $5$-mers espacés à partir des $6$-mers en supprimant le    $4^{eme}$ nucléotide.\\
+        Avec les k-mers espacés à délétion, chaque $\mathbf{0}$ du motif correspond à une nucléotide à supprimer.\\
+        Par ex, un motif $\mathbf{m=111011}$ créera tous les $5$-mers espacés à partir des $6$-mers en supprimant le $4^{eme}$ nucléotide.\bigskip\\
         \textbf{Ex:} Avec une séquence $x = AACCGGTT$ et le motif $m = 111011$, on a les $5$-mers espacés suivants:\\
         \begin{center}\begin{tikzpicture}
           \coordinate (s) at (0, 2);
@@ -109,8 +108,9 @@ TITRE DE L'INTITULE DE STAGE}
         \end{tikzpicture}\end{center}
         \textbf{5-mers:} \{AACGG, ACCGT, CCGTT\}
       \subsection{K-mers espacés à insertion}
-        Avec les \textbf{k-mers espacés à insertion}, chaque $\mathbf{0}$ du motif correspond à une nucléotide à insérer.\\
-        Toutes les nucléotides possibles pour chaque $\mathbf{0}$ sont extraites, ce qui produit $\mathbf{\left(L - k + 1 + t\right)*4^t}$ k-mers espacés possibles, avec $\mathbf{t = \text{nombre de zéros dans le motif}}$.\\
+        Avec les k-mers espacés à insertion, chaque $\mathbf{0}$ du motif correspond à une nucléotide à insérer.\\
+        Toutes les nucléotides possibles pour chaque $\mathbf{0}$ sont extraites, ce qui produit $\mathbf{\left(L - k + 1 + t\right)*4^t}$ k-mers espacés possibles, avec $t$ = nombre de zéros dans le motif.\\
+
         \textbf{Ex:} Avec une séquence $\mathbf{x = AACCGGTT}$ et le motif $\mathbf{m = 111011}$, on a les $6$-mers espacés suivants:\\
         \begin{center}\begin{tikzpicture}
           \coordinate (s) at (0, 3);
@@ -144,15 +144,19 @@ TITRE DE L'INTITULE DE STAGE}
           CCG\textbf{A}GT, CCG\textbf{C}GT, CCG\textbf{G}GT, CCG\textbf{T}GT,
           CGG\textbf{A}TT, CGG\textbf{C}TT, CGG\textbf{G}TT, CGG\textbf{T}TT
         \}
-    \section{Etat de l'art}
-      Parmi les différents logiciels qui permettent le comptage des k-mers simple, nous avons l'outil Jellyfish \cite{Marcais2011} qui est de très loin de plus efficace (500Mo en < 10s avec 8 coeurs), et qui est spécialisé dans l'approche multi-threading.\\
-      En revanche, en ce qui concerne les k-mers espacés, les outils sont encore peu nombreux et innéficace.
-      Une equipe de chercheur de l'université de montpellier sont en train de developper un outil nommé gkampi permettant de faire de l'extraction de k-mers normaux ou espacés.\\
-      Cependant à l'heure de l'écriture de ce rapport, les developpements de l'outils sont encore au stade experimental, et souffre de performance en vitesse peu satisfaisante, même si elle profite d'une utilisation RAM très optimale.\\
-      C'est à partir de cet etat de fait que j'ai commencé à developper mon propre logiciel, kmerDel.
+    \section{Etat de la recherche sur les k-mers}
+      Parmi les différents logiciels qui permettent le comptage des k-mers simples, nous avons cité l'outil \textbf{Jellyfish} \cite{Marcais2011} qui est de très loin de plus efficace (500Mo en moins de 15s, avec 8 threads), et qui est spécialisé dans l'approche \textit{multi-threading}.\\
 
+      En revanche, en ce qui concerne les k-mers espacés, les outils sont encore peu nombreux et innefficace.
+      Dans le cadre de ce stage de recherche, nous avons pris contact avec une équipe de chercheur de l'université de Montpellier. Cette équipe développe actuellement un outil nommé \textbf{gkampi}, permettant de faire de l'extraction de k-mers simples ou espacés à délétion.\\
+
+      Cependant au moment de l'écriture de ce rapport, l'outil est encore au stade experimental, et souffre de performances en vitesse peu satisfaisante, même si elle profite d'une utilisation RAM très optimale. De plus, le logiciel permet d'extraire les k-mers espacés à délétion, mais pas ceux à insertion ou substitution.\\
+
+      C'est à partir de cet état de fait que j'ai entrepris de développer mes propres logiciels, \textbf{kmerDel} et \textbf{kmerExpand}.
   \chapter{K-mers espacés à délétion: kmerDel}
     \section{Programme}
+      KmerDel a pour but d'extraire les k-mers espacés à délétion, en utilisant le principe d'une table de hachage afin de grouper les doublons.\bigskip\\
+      \normalsize
       \begin{algorithm}[H]{
         \Entree{table\_hachage $table$, chaînes $lectures$, chaîne $motif$, entier $k$}
         \PourCh{$lecture$ de $lectures$}{
@@ -176,15 +180,17 @@ TITRE DE L'INTITULE DE STAGE}
         }
         \caption{kmerDel}
       }\end{algorithm}
-      Pour chaque lecture traitée, on fait passer le motif en fenetre glissante afin de recolter tous les k-mers, puis on ajoute le kmer à la table s'il n'existe pas déjà. Afin de gagner en espace mémoire, le kmer est converti en base 4 avant d'être stocké.\\
-      La table de hachage a subit divers améliorations au fil du temps:
+      \large
+      Pour chaque lecture traitée, on fait passer le motif en fenêtre glissante afin de recolter tous les k-mers, puis on ajoute le kmer à la table s'il n'existe pas déjà. Afin de gagner en espace mémoire, le kmer est converti en base 4 avant d'être stocké.\\
+
+      La table de hachage a subit divers améliorations au fil du temps:\\
       \begin{itemize}
-        \item Tout d'abord, c'était un type \textbf{map} de la librairie STL du C++, et le programme n'avait n'utilisait qu'un seul thread.
-        \item Ensuite, avec le développement du multi-thread, le fichier de lectures ADN a été séparé en $t$ ensemble de lignes, qui sont passés indépendament à une table de hachage par thread. Puis les tables étaient refusionnées ensemble. L'utilisation de $t$ table était du au fait que les conteneurs de la STL ne sont pas \textit{thread-safe}, c'est à dire que l'utilisation de threads sur les conteneurs de la STL donne lieu à un comportement non-défini.
-        \item La table de hachage est devenu une \textbf{unordered\_map} (c++11) qui a l'avantage d'être prêt de quatre fois plus rapide en temps d'execution que \textbf{map}, en contrepartie du fait qu'elle e trie plus par ordre croissant ses éléments.
-        \item Enfin après diverses recherches, la table est devenu une \textbf{cuckoohash\_map} qui est un type issu de la librairie indépendante libcuckoo(ref). Ce type a pour avantage d'être \textit{thread-safe}, ce qui a permis de ne conserver qu'une seule table pour tous les threads, décuplant alors les performances du programme.
-      \end{itemize}
-      Au niveau de l'affichage, une amélioration en vitesse importante à été effectuée en replacant les affichage du programme par un \textbf{buffer} qui stocke les lignes avant de les afficher.
+        \item C'était au début un type \textbf{map} de la librairie STL du C++, et le programme n'utilisait qu'un seul thread.
+        \item Le développement du multi-thread permet de traiter l'information plus efficacement en parrallèlisant le traitement. Au lieu d'avoir une seule table, le programme créé $t = \text{nombre de threads}$ tables, qui sont ensuite fusionnées ensemble. La duplication du nombre de tables est dû au fait que les conteneurs de la STL ne sont pas \textit{thread-safe}, c'est à dire que la modification d'un même élément au sein de différent threads donne lieu à des comportements non-définis.
+        \item La table de hachage est devenu une \textbf{unordered\_map} (c++11), qui a l'avantage d'être quatre fois plus rapide en temps d'exécution que \textbf{map}, en contrepartie du fait qu'elle ne trie plus ses éléments par ordre croissant.
+        \item Enfin après diverses recherches, la table est devenu une \textbf{cuckoohash\_map} qui est un type issu de la librairie indépendante \textbf{libcuckoo} \cite{Cuckoo2013} \cite{Cuckoo2014}. Cette librairie, en plus d'être bien plus performante que les conteneurs de la STL, a pour avantage d'être \textit{thread-safe}, ce qui a permis de ne conserver qu'une seule table pour tous les threads, décuplant alors les performances du programme.
+      \end{itemize}\bigskip
+      Au niveau de l'affichage, une amélioration en vitesse importante à été effectuée en replacant les affichage du programme par un \textit{buffer} qui stocke les lignes en mémoire avant de les afficher.
     \section{Résultats}
       Avec ce programme simple mais efficace, nous avons réussi à se rapprocher des performance du ténor du genre, Jellyfish. En effet, pour un fichier de 500Mo de lectures, Jellyfish met environ 13 secondes contre 17 pour kmerDel. L'avantage de kmerDel est qu'il permet, contrairement à Jellyfish, de compter les k-mers espacés à délétions. En contrepartie, kmerDel utilise beaucoup plus de RAM que Jellyfish dès que l'on augmente la taille de k, ce qui le rend moins utilisable en pratique.\\
 
@@ -192,6 +198,7 @@ TITRE DE L'INTITULE DE STAGE}
     \newpage
   \chapter{K-mers espacés à insertion: kmerExpand}
     \section{Programme}
+      \normalsize
       \begin{algorithm}[H]{
         \Entree{chaînes $lectures$, chaîne $motif$, entier $k$}
         \PourCh{$lecture$ de $lectures$}{
@@ -214,6 +221,7 @@ TITRE DE L'INTITULE DE STAGE}
         }
         \caption{kmerExpandRec}
       }\end{algorithm}
+      \large
       L'approche adoptée pour kmerExpand a été différente, en effet, du à la manière dont les k-mers sont construits et à cause de l'explosion de RAM du précédent programme, la technique employée par kmerDel ne pouvait pas fonctionner ici.\\
       Etant donné qu'il y a quatre nucléotides possible par $0$ du motif, on a $(L - k + 1 + t)*4^t$ k-mers de taille k possible, ce qui développe de façon exponentielle les resultats. Afin de ne pas saturer la RAM, l'approche actuelle, malgré son côté récursif, est très peu gourmande en mémoire car elle ne stocke aucun des kmers obtenus mais les affiche immédiatement. De plus, l'algorithme utilise des \textit{mutex} afin de séparer l'affichage des différents \\
       En conséquence, l'algorithme est bien plus lent que kmerDel, cependant, la taille du fichier n'influe pas sur la quantité de RAM utilisée, ce qui en fait un outil utilisable en pratique.
