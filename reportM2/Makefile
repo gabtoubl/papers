@@ -7,7 +7,7 @@ all:		$(NAME).tex
 		xelatex $(NAME).tex
 
 clean:
-		@rm -vf $(NAME).aux $(NAME).bbl $(NAME).blg $(NAME).log
+		@rm -vf $(NAME).aux $(NAME).bbl $(NAME).blg $(NAME).log $(NAME).toc
 
 fclean:	clean
 		@rm -vf $(NAME).pdf

@@ -2,8 +2,10 @@
 \usepackage{graphicx}
 \usepackage{fontspec}
 \usepackage{tikz}
+\usepackage{amsmath}
 \usepackage[makeroom]{cancel}
-\usepackage[frenchb]{babel}
+\usepackage[french]{algorithm2e}
+\usepackage[french]{babel}
 
 \title{Mémoire de stage\\
 TITRE DE L'INTITULE DE STAGE}
@@ -12,6 +14,8 @@ TITRE DE L'INTITULE DE STAGE}
 \usetikzlibrary{calc, fit, decorations.pathreplacing}
 
 \begin{document}
+  \RestyleAlgo{boxruled}
+  \LinesNumbered
   \maketitle\newpage
   \tableofcontents\newpage
   \chapter{Introduction}
@@ -42,21 +46,192 @@ TITRE DE L'INTITULE DE STAGE}
     \newpage
   \chapter{Comptage des k-mers}
     \section{K-mers}
+      Les \textbf{k-mers} sont les facteurs de taille $\mathbf{k}$ d'une séquence ADN donnée. Pour une lecture de taille $\mathbf{L}$, on a donc $\mathbf{L - k + 1}$ k-mers possibles.\\
+      \textbf{Ex:} Avec une séquence $x = AACCGGTT$, on a les $k$-mers de taille $6$ ($6$-mers) suivants:\\
+      \begin{center}\begin{tikzpicture}
+        \coordinate (s) at (0, 2);
+        \foreach \xi [count=\i] in {\mathbf{k_1:}, A, A, C, C, G, G, T, T} {
+          \node[minimum size=5mm] (x\i) at (s) {$\xi$};
+          \coordinate (s) at ($(s) + (0.8, 0)$);
+        }
+        \coordinate (s) at (0, 1);
+        \foreach \yi [count=\i] in {\mathbf{k_2:}, A, A, C, C, G, G, T, T} {
+          \node[minimum size=5mm] (y\i) at (s) {$\yi$};
+          \coordinate (s) at ($(s) + (0.8, 0)$);
+        }
+        \coordinate (s) at (0, 0);
+        \foreach \zi [count=\i] in {\mathbf{k_3:}, A, A, C, C, G, G, T, T} {
+          \node[minimum size=5mm] (z\i) at (s) {$\zi$};
+          \coordinate (s) at ($(s) + (0.8, 0)$);
+        }
+        \node[draw,rectangle,red,fit=(x2) (x7)] {};
+        \node[draw,rectangle,red,fit=(y3) (y8)] {};
+        \node[draw,rectangle,red,fit=(z4) (z9)] {};
+      \end{tikzpicture}\end{center}
+      \textbf{6-mers:} \{AACCGG, ACCGGT, CCGGTT\}\\
+      Afin d'énumérer les k-mers de grands jeux de données, divers outils logiciels ont été développés. L'objectif de ces outils est d'extraire les k-mers de façon à \textbf{grouper} les doublons, d'avoir un \textbf{temps d'exécution} viable et d'utiliser le moins d'\textbf{espace mémoire} possible.\\
+
+      Le logiciel \textbf{Jellyfish} \cite{Marcais2011} surpasse ses concurrents dans ce domaine, avec des meilleures performances bien supérieures, tout facteur confondu.\\
+
+      Les k-mers ainsi extraits sont principalement utilisés pour \textbf{l'alignement et l'assemblage} de lectures.\\
+
+      Dans le cas présent, l'utilisation des k-mers a pour but de \textbf{trouver des répétitions} au sein des lectures longues afin de pouvoir \textbf{identifier les nucléotides erronées}, afin de pouvoir les corriger.
+      \newpage
     \section{K-mers espacés}
+      Les \textbf{k-mers espacés} sont utilisés afin de simuler les erreurs d'insertions et de délétions sur les lectures longues.\\
+      Au lieu de prendre les facteurs de taille k d'une séquence, on va sélectionner les k-mers espacés selon un motif précis.\\
+      \subsection{K-mers espacés à délétion}
+        Avec les \textbf{k-mers espacés à délétion}, chaque $\mathbf{0}$ du motif correspond à une nucléotide à supprimer.\\
+        Par ex, un motif $\mathbf{m=111011}$ créera tous les $5$-mers espacés à partir des $6$-mers en supprimant le    $4^{eme}$ nucléotide.\\
+        \textbf{Ex:} Avec une séquence $x = AACCGGTT$ et le motif $m = 111011$, on a les $5$-mers espacés suivants:\\
+        \begin{center}\begin{tikzpicture}
+          \coordinate (s) at (0, 2);
+          \foreach \xi [count=\i] in {\mathbf{k_1:}, A, A, C, \xcancel{C}, G, G, T, T} {
+            \node[minimum size=5mm] (x\i) at (s) {$\xi$};
+            \coordinate (s) at ($(s) + (0.8, 0)$);
+          }
+          \coordinate (s) at (0, 1);
+          \foreach \yi [count=\i] in {\mathbf{k_2:}, A, A, C, C, \xcancel{G}, G, T, T} {
+            \node[minimum size=5mm] (y\i) at (s) {$\yi$};
+            \coordinate (s) at ($(s) + (0.8, 0)$);
+          }
+          \coordinate (s) at (0, 0);
+          \foreach \zi [count=\i] in {\mathbf{k_3:}, A, A, C, C, G, \xcancel{G}, T, T} {
+            \node[minimum size=5mm] (z\i) at (s) {$\zi$};
+            \coordinate (s) at ($(s) + (0.8, 0)$);
+          }
+          \node[draw,rectangle,red,fit=(x2) (x4)] {};
+          \node[draw,rectangle,red,fit=(x6) (x7)] {};
+          \node[draw,rectangle,red,fit=(y3) (y5)] {};
+          \node[draw,rectangle,red,fit=(y7) (y8)] {};
+          \node[draw,rectangle,red,fit=(z4) (z6)] {};
+          \node[draw,rectangle,red,fit=(z8) (z9)] {};
+        \end{tikzpicture}\end{center}
+        \textbf{5-mers:} \{AACGG, ACCGT, CCGTT\}
+      \subsection{K-mers espacés à insertion}
+        Avec les \textbf{k-mers espacés à insertion}, chaque $\mathbf{0}$ du motif correspond à une nucléotide à insérer.\\
+        Toutes les nucléotides possibles pour chaque $\mathbf{0}$ sont extraites, ce qui produit $\mathbf{\left(L - k + 1 + t\right)*4^t}$ k-mers espacés possibles, avec $\mathbf{t = \text{nombre de zéros dans le motif}}$.\\
+        \textbf{Ex:} Avec une séquence $\mathbf{x = AACCGGTT}$ et le motif $\mathbf{m = 111011}$, on a les $6$-mers espacés suivants:\\
+        \begin{center}\begin{tikzpicture}
+          \coordinate (s) at (0, 3);
+          \foreach \xi [count=\i] in {$\mathbf{k_1:}$, $A$, $A$, $C$, \small$\underbrace{A, C, G, T}_{}$, $C$, $G$, $G$, $T$, $T$} {
+            \node[minimum size=5mm] (x\i) at (s) {\xi};
+            \coordinate (s) at ($(s) + (0.8, 0)$);
+          }
+          \coordinate (s) at (0, 2);
+          \foreach \yi [count=\i] in {$\mathbf{k_2:}$, $A$, $A$, $C$, $C$, \small$\underbrace{A, C, G, T}_{}$, $G$, $G$, $T$, $T$} {
+            \node[minimum size=5mm] (y\i) at (s) {\yi};
+            \coordinate (s) at ($(s) + (0.8, 0)$);
+          }
+          \coordinate (s) at (0, 1);
+          \foreach \zi [count=\i] in {$\mathbf{k_3:}$, $A$, $A$, $C$, $C$, $G$, \small$\underbrace{A, C, G, T}_{}$, $G$, $T$, $T$} {
+            \node[minimum size=5mm] (z\i) at (s) {\zi};
+            \coordinate (s) at ($(s) + (0.8, 0)$);
+          }
+          \coordinate (s) at (0, 0);
+          \foreach \mi [count=\i] in {$\mathbf{k_4:}$, $A$, $A$, $C$, $C$, $G$, $G$, \small$\underbrace{A, C, G, T}_{}$, $T$, $T$} {
+            \node[minimum size=5mm] (m\i) at (s) {\mi};
+            \coordinate (s) at ($(s) + (0.8, 0)$);
+          }
+          \node[draw,rectangle,red,fit=(x2) (x7)] {};
+          \node[draw,rectangle,red,fit=(y3) (y8)] {};
+          \node[draw,rectangle,red,fit=(z4) (z9)] {};
+          \node[draw,rectangle,red,fit=(m5) (m10)] {};
+        \end{tikzpicture}\end{center}
+        \textbf{6-mers:} \{
+          AAC\textbf{A}CG, AAC\textbf{C}CG, AAC\textbf{G}CG, AAC\textbf{T}CG,
+          ACC\textbf{A}GG, ACC\textbf{C}GG, ACC\textbf{G}GG, ACC\textbf{T}GG,
+          CCG\textbf{A}GT, CCG\textbf{C}GT, CCG\textbf{G}GT, CCG\textbf{T}GT,
+          CGG\textbf{A}TT, CGG\textbf{C}TT, CGG\textbf{G}TT, CGG\textbf{T}TT
+        \}
     \section{Etat de l'art}
-  \chapter{K-mers espacés à délétion: kmerCount}
+      Parmi les différents logiciels qui permettent le comptage des k-mers simple, nous avons l'outil Jellyfish \cite{Marcais2011} qui est de très loin de plus efficace (500Mo en < 10s avec 8 coeurs), et qui est spécialisé dans l'approche multi-threading.\\
+      En revanche, en ce qui concerne les k-mers espacés, les outils sont encore peu nombreux et innéficace.
+      Une equipe de chercheur de l'université de montpellier sont en train de developper un outil nommé gkampi permettant de faire de l'extraction de k-mers normaux ou espacés.\\
+      Cependant à l'heure de l'écriture de ce rapport, les developpements de l'outils sont encore au stade experimental, et souffre de performance en vitesse peu satisfaisante, même si elle profite d'une utilisation RAM très optimale.\\
+      C'est à partir de cet etat de fait que j'ai commencé à developper mon propre logiciel, kmerDel.
+
+  \chapter{K-mers espacés à délétion: kmerDel}
+    \section{Programme}
+      \begin{algorithm}[H]{
+        \Entree{table\_hachage $table$, chaînes $lectures$, chaîne $motif$, entier $k$}
+        \PourCh{$lecture$ de $lectures$}{
+          \Pour{$i = 0;\ i + k \le |lecture|;\ i += 1$}{
+            $kmerEntier = 0$\;
+            $kmer = ""$\;
+            \Pour{$j = 0;\ j < k;\ j += 1$}{
+              \lSi{$motif[j] \ne 0$}{$kmer = kmer + lecture[i + j]$}
+            }
+            \PourCh{$nucleotide$ de $kmer$}{
+              $kmerEntier *= 4$\;
+              \Suivant{valeur de $nucleotide$}{
+                \lCas{A}{}
+                \lCas{C}{$kmerEntier += 1$}
+                \lCas{G}{$kmerEntier += 2$}
+                \lCas{T}{$kmerEntier += 3$}
+              }
+            }
+            $table[kmerEntier] += 1$\;
+          }
+        }
+        \caption{kmerDel}
+      }\end{algorithm}
+      Pour chaque lecture traitée, on fait passer le motif en fenetre glissante afin de recolter tous les k-mers, puis on ajoute le kmer à la table s'il n'existe pas déjà. Afin de gagner en espace mémoire, le kmer est converti en base 4 avant d'être stocké.\\
+      La table de hachage a subit divers améliorations au fil du temps:
+      \begin{itemize}
+        \item Tout d'abord, c'était un type \textbf{map} de la librairie STL du C++, et le programme n'avait n'utilisait qu'un seul thread.
+        \item Ensuite, avec le développement du multi-thread, le fichier de lectures ADN a été séparé en $t$ ensemble de lignes, qui sont passés indépendament à une table de hachage par thread. Puis les tables étaient refusionnées ensemble. L'utilisation de $t$ table était du au fait que les conteneurs de la STL ne sont pas \textit{thread-safe}, c'est à dire que l'utilisation de threads sur les conteneurs de la STL donne lieu à un comportement non-défini.
+        \item La table de hachage est devenu une \textbf{unordered\_map} (c++11) qui a l'avantage d'être prêt de quatre fois plus rapide en temps d'execution que \textbf{map}, en contrepartie du fait qu'elle e trie plus par ordre croissant ses éléments.
+        \item Enfin après diverses recherches, la table est devenu une \textbf{cuckoohash\_map} qui est un type issu de la librairie indépendante libcuckoo(ref). Ce type a pour avantage d'être \textit{thread-safe}, ce qui a permis de ne conserver qu'une seule table pour tous les threads, décuplant alors les performances du programme.
+      \end{itemize}
+      Au niveau de l'affichage, une amélioration en vitesse importante à été effectuée en replacant les affichage du programme par un \textbf{buffer} qui stocke les lignes avant de les afficher.
+    \section{Résultats}
+      Avec ce programme simple mais efficace, nous avons réussi à se rapprocher des performance du ténor du genre, Jellyfish. En effet, pour un fichier de 500Mo de lectures, Jellyfish met environ 13 secondes contre 17 pour kmerDel. L'avantage de kmerDel est qu'il permet, contrairement à Jellyfish, de compter les k-mers espacés à délétions. En contrepartie, kmerDel utilise beaucoup plus de RAM que Jellyfish dès que l'on augmente la taille de k, ce qui le rend moins utilisable en pratique.\\
+
+      RESULTAT PIERRE EN TABLEAU
     \newpage
   \chapter{K-mers espacés à insertion: kmerExpand}
+    \section{Programme}
+      \begin{algorithm}[H]{
+        \Entree{chaînes $lectures$, chaîne $motif$, entier $k$}
+        \PourCh{$lecture$ de $lectures$}{
+          \Pour{$i = 0;\ i + k \le |lecture|;\ i += 1$}{
+            $kmer = lecture[i:k]\;$
+            $kmersExpandRec(kmer, motif, 0)\;$
+          }
+        }
+        \caption{kmerExpand}
+      }\end{algorithm}
+      \begin{algorithm}[H]{
+        \Entree{chaîne $kmer$, chaîne $nvKmer$, chaîne $motif$, entier $posMotif$, entier $posKmer$}
+        \lSi{$posSeed == |motif|$}{$affiche(nvKmer)$}
+        \lSinonSi{$motif[posMotif] \ne 0$}{$kmersExpandRec(kmer, nvKmer + kmer[posKmer], posMotif+1, posKmer+1)$}
+        \Sinon{
+          $kmersExpandRec(kmer, nvKmer + A, posMotif+1, posKmer)$\;
+          $kmersExpandRec(kmer, nvKmer + C, posMotif+1, posKmer)$\;
+          $kmersExpandRec(kmer, nvKmer + G, posMotif+1, posKmer)$\;
+          $kmersExpandRec(kmer, nvKmer + T, posMotif+1, posKmer)$\;
+        }
+        \caption{kmerExpandRec}
+      }\end{algorithm}
+      L'approche adoptée pour kmerExpand a été différente, en effet, du à la manière dont les k-mers sont construits et à cause de l'explosion de RAM du précédent programme, la technique employée par kmerDel ne pouvait pas fonctionner ici.\\
+      Etant donné qu'il y a quatre nucléotides possible par $0$ du motif, on a $(L - k + 1 + t)*4^t$ k-mers de taille k possible, ce qui développe de façon exponentielle les resultats. Afin de ne pas saturer la RAM, l'approche actuelle, malgré son côté récursif, est très peu gourmande en mémoire car elle ne stocke aucun des kmers obtenus mais les affiche immédiatement. De plus, l'algorithme utilise des \textit{mutex} afin de séparer l'affichage des différents \\
+      En conséquence, l'algorithme est bien plus lent que kmerDel, cependant, la taille du fichier n'influe pas sur la quantité de RAM utilisée, ce qui en fait un outil utilisable en pratique.
+    \section{Résultats}
+      Resultats pierre plutot bons, identification du probleme toujours incertain
     \newpage
-  \chapter{kmerDel}
-    \newpage
-  \chapter{MAWS}
-    \newpage
-  \chapter{LCS}
+  \chapter{Autres structures de données recherchées}
+    \section{Mot Minimaux Absents (MMAs)}
+      Explication wikipedia + pierre\\
+      Resultats pas au rdv
+    \section{Plus long sous-mot commun (PLS)}
+      Explication cours de lecroq.\\
+      Schema matrice lcs
+      Resultats pas au rdv
     \newpage
   \chapter{Conclusion}
+    Peu de bon resultats, a part kmerExpand, beaucoup de choses à revoir.
     \newpage
-  \chapter{Références}
-    \bibliographystyle{unsrt}
-    \bibliography{biblio}
+  \bibliographystyle{unsrt}
+  \bibliography{biblio}
 \end{document}
