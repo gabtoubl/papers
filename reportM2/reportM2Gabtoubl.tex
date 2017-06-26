@@ -154,79 +154,74 @@ TITRE DE L'INTITULE DE STAGE}
 
       C'est à partir de cet état de fait que j'ai entrepris de développer mes propres logiciels, \textbf{kmerDel} et \textbf{kmerExpand}.
   \chapter{K-mers espacés à délétion: kmerDel}
-    \section{Programme}
-      KmerDel a pour but d'extraire les k-mers espacés à délétion, en utilisant le principe d'une table de hachage afin de grouper les doublons.\bigskip\\
-      \normalsize
-      \begin{algorithm}[H]{
-        \Entree{table\_hachage $table$, chaînes $lectures$, chaîne $motif$, entier $k$}
-        \PourCh{$lecture$ de $lectures$}{
-          \Pour{$i = 0;\ i + k \le |lecture|;\ i += 1$}{
-            $kmerEntier = 0$\;
-            $kmer = ""$\;
-            \Pour{$j = 0;\ j < k;\ j += 1$}{
-              \lSi{$motif[j] \ne 0$}{$kmer = kmer + lecture[i + j]$}
-            }
-            \PourCh{$nucleotide$ de $kmer$}{
-              $kmerEntier *= 4$\;
-              \Suivant{valeur de $nucleotide$}{
-                \lCas{A}{}
-                \lCas{C}{$kmerEntier += 1$}
-                \lCas{G}{$kmerEntier += 2$}
-                \lCas{T}{$kmerEntier += 3$}
-              }
-            }
-            $table[kmerEntier] += 1$\;
+    KmerDel a pour but d'extraire les k-mers espacés à délétion, en utilisant le principe d'une table de hachage afin de grouper les doublons.\bigskip\\
+    \normalsize
+    \begin{algorithm}[H]{
+      \Entree{table\_hachage $table$, chaînes $lectures$, chaîne $motif$, entier $k$}
+      \PourCh{$lecture$ de $lectures$}{
+        \Pour{$i = 0;\ i + k \le |lecture|;\ i += 1$}{
+          $kmerEntier = 0$\;
+          $kmer = ""$\;
+          \Pour{$j = 0;\ j < k;\ j += 1$}{
+            \lSi{$motif[j] \ne 0$}{$kmer = kmer + lecture[i + j]$}
           }
+          \PourCh{$nucleotide$ de $kmer$}{
+            $kmerEntier *= 4$\;
+            \Suivant{valeur de $nucleotide$}{
+              \lCas{A}{}
+              \lCas{C}{$kmerEntier += 1$}
+              \lCas{G}{$kmerEntier += 2$}
+              \lCas{T}{$kmerEntier += 3$}
+            }
+          }
+          $table[kmerEntier] += 1$\;
         }
-        \caption{kmerDel}
-      }\end{algorithm}
-      \large
-      Pour chaque lecture traitée, on fait passer le motif en fenêtre glissante afin de recolter tous les k-mers, puis on ajoute le kmer à la table s'il n'existe pas déjà. Afin de gagner en espace mémoire, le kmer est converti en base 4 avant d'être stocké.\\
+      }
+      \caption{kmerDel}
+    }\end{algorithm}
+    \large
+    Pour chaque lecture traitée, on fait passer le motif en fenêtre glissante afin de recolter tous les k-mers, puis on ajoute le kmer à la table s'il n'existe pas déjà. Afin de gagner en espace mémoire, le kmer est converti en base 4 avant d'être stocké.\\
 
-      La table de hachage a subit divers améliorations au fil du temps:\\
-      \begin{itemize}
-        \item C'était au début un type \textbf{map} de la librairie STL du C++, et le programme n'utilisait qu'un seul thread.
-        \item Le développement du multi-thread permet de traiter l'information plus efficacement en parrallèlisant le traitement. Au lieu d'avoir une seule table, le programme créé $t = \text{nombre de threads}$ tables, qui sont ensuite fusionnées ensemble. La duplication du nombre de tables est dû au fait que les conteneurs de la STL ne sont pas \textit{thread-safe}, c'est à dire que la modification d'un même élément au sein de différent threads donne lieu à des comportements non-définis.
-        \item La table de hachage est devenu une \textbf{unordered\_map} (c++11), qui a l'avantage d'être quatre fois plus rapide en temps d'exécution que \textbf{map}, en contrepartie du fait qu'elle ne trie plus ses éléments par ordre croissant.
-        \item Enfin après diverses recherches, la table est devenu une \textbf{cuckoohash\_map} qui est un type issu de la librairie indépendante \textbf{libcuckoo} \cite{Cuckoo2013} \cite{Cuckoo2014}. Cette librairie, en plus d'être bien plus performante que les conteneurs de la STL, a pour avantage d'être \textit{thread-safe}, ce qui a permis de ne conserver qu'une seule table pour tous les threads, décuplant alors les performances du programme.
-      \end{itemize}\bigskip
-      Au niveau de l'affichage, une amélioration en vitesse importante à été effectuée en replacant les affichage du programme par un \textit{buffer} qui stocke les lignes en mémoire avant de les afficher.
-    \section{Résultats}
-      Avec ce programme simple mais efficace, nous avons réussi à se rapprocher des performance du ténor du genre, Jellyfish. En effet, pour un fichier de 500Mo de lectures, Jellyfish met environ 13 secondes contre 17 pour kmerDel. L'avantage de kmerDel est qu'il permet, contrairement à Jellyfish, de compter les k-mers espacés à délétions. En contrepartie, kmerDel utilise beaucoup plus de RAM que Jellyfish dès que l'on augmente la taille de k, ce qui le rend moins utilisable en pratique.\\
+    La table de hachage a subit divers améliorations au fil du temps:\\
+    \begin{itemize}
+      \item C'était au début un type \textbf{map} de la librairie STL du C++, et le programme n'utilisait qu'un seul thread.
+      \item Le développement du multi-thread permet de traiter l'information plus efficacement en parrallèlisant le traitement. Au lieu d'avoir une seule table, le programme créé $t = \text{nombre de threads}$ tables, qui sont ensuite fusionnées ensemble. La duplication du nombre de tables est dû au fait que les conteneurs de la STL ne sont pas \textit{thread-safe}, c'est à dire que la modification d'un même élément au sein de différent threads donne lieu à des comportements non-définis.
+      \item La table de hachage est devenu une \textbf{unordered\_map} (c++11), qui a l'avantage d'être quatre fois plus rapide en temps d'exécution que \textbf{map}, en contrepartie du fait qu'elle ne trie plus ses éléments par ordre croissant.
+      \item Enfin après diverses recherches, la table est devenu une \textbf{cuckoohash\_map} qui est un type issu de la librairie indépendante \textbf{libcuckoo} \cite{Cuckoo2013} \cite{Cuckoo2014}. Cette librairie, en plus d'être bien plus performante que les conteneurs de la STL, a pour avantage d'être \textit{thread-safe}, ce qui a permis de ne conserver qu'une seule table pour tous les threads, décuplant alors les performances du programme.
+    \end{itemize}\bigskip
 
-      RESULTAT PIERRE EN TABLEAU
+    Au niveau de l'affichage, une amélioration en vitesse importante à été effectuée en replacant les affichage du programme par un \textit{buffer} qui stocke les lignes en mémoire avant de les afficher.\\
+
+    Avec ce programme simple mais efficace, nous avons réussi à se rapprocher des performance du ténor du genre, Jellyfish. En effet, pour un fichier de 500Mo de lectures, Jellyfish met environ 13 secondes contre 17 pour kmerDel. L'avantage de kmerDel est qu'il permet, contrairement à Jellyfish, de compter les k-mers espacés à délétions. En contrepartie, kmerDel utilise beaucoup plus de RAM que Jellyfish dès que l'on augmente la taille de k, ce qui le rend moins utilisable en pratique.
     \newpage
   \chapter{K-mers espacés à insertion: kmerExpand}
-    \section{Programme}
-      \normalsize
-      \begin{algorithm}[H]{
-        \Entree{chaînes $lectures$, chaîne $motif$, entier $k$}
-        \PourCh{$lecture$ de $lectures$}{
-          \Pour{$i = 0;\ i + k \le |lecture|;\ i += 1$}{
-            $kmer = lecture[i:k]\;$
-            $kmersExpandRec(kmer, motif, 0)\;$
-          }
+    \normalsize
+    \begin{algorithm}[H]{
+      \Entree{chaînes $lectures$, chaîne $motif$, entier $k$}
+      \PourCh{$lecture$ de $lectures$}{
+        \Pour{$i = 0;\ i + k \le |lecture|;\ i += 1$}{
+          $kmer = lecture[i:k]\;$
+          $kmersExpandRec(kmer, motif, 0)\;$
         }
-        \caption{kmerExpand}
-      }\end{algorithm}
-      \begin{algorithm}[H]{
-        \Entree{chaîne $kmer$, chaîne $nvKmer$, chaîne $motif$, entier $posMotif$, entier $posKmer$}
-        \lSi{$posSeed == |motif|$}{$affiche(nvKmer)$}
-        \lSinonSi{$motif[posMotif] \ne 0$}{$kmersExpandRec(kmer, nvKmer + kmer[posKmer], posMotif+1, posKmer+1)$}
-        \Sinon{
-          $kmersExpandRec(kmer, nvKmer + A, posMotif+1, posKmer)$\;
-          $kmersExpandRec(kmer, nvKmer + C, posMotif+1, posKmer)$\;
-          $kmersExpandRec(kmer, nvKmer + G, posMotif+1, posKmer)$\;
-          $kmersExpandRec(kmer, nvKmer + T, posMotif+1, posKmer)$\;
-        }
-        \caption{kmerExpandRec}
-      }\end{algorithm}
-      \large
-      L'approche adoptée pour kmerExpand a été différente, en effet, du à la manière dont les k-mers sont construits et à cause de l'explosion de RAM du précédent programme, la technique employée par kmerDel ne pouvait pas fonctionner ici.\\
-      Etant donné qu'il y a quatre nucléotides possible par $0$ du motif, on a $(L - k + 1 + t)*4^t$ k-mers de taille k possible, ce qui développe de façon exponentielle les resultats. Afin de ne pas saturer la RAM, l'approche actuelle, malgré son côté récursif, est très peu gourmande en mémoire car elle ne stocke aucun des kmers obtenus mais les affiche immédiatement. De plus, l'algorithme utilise des \textit{mutex} afin de séparer l'affichage des différents \\
-      En conséquence, l'algorithme est bien plus lent que kmerDel, cependant, la taille du fichier n'influe pas sur la quantité de RAM utilisée, ce qui en fait un outil utilisable en pratique.
-    \section{Résultats}
-      Resultats pierre plutot bons, identification du probleme toujours incertain
+      }
+      \caption{kmerExpand}
+    }\end{algorithm}
+    \begin{algorithm}[H]{
+      \Entree{chaîne $kmer$, chaîne $nvKmer$, chaîne $motif$, entier $posMotif$, entier $posKmer$}
+      \lSi{$posSeed == |motif|$}{$affiche(nvKmer)$}
+      \lSinonSi{$motif[posMotif] \ne 0$}{$kmersExpandRec(kmer, nvKmer + kmer[posKmer], posMotif+1, posKmer+1)$}
+      \Sinon{
+        $kmersExpandRec(kmer, nvKmer + A, posMotif+1, posKmer)$\;
+        $kmersExpandRec(kmer, nvKmer + C, posMotif+1, posKmer)$\;
+        $kmersExpandRec(kmer, nvKmer + G, posMotif+1, posKmer)$\;
+        $kmersExpandRec(kmer, nvKmer + T, posMotif+1, posKmer)$\;
+      }
+      \caption{kmerExpandRec}
+    }\end{algorithm}
+    \large
+    L'approche adoptée pour kmerExpand a été différente, en effet, du à la manière dont les k-mers sont construits et à cause de l'explosion de RAM du précédent programme, la technique employée par kmerDel ne pouvait pas fonctionner ici.\\
+    Etant donné qu'il y a quatre nucléotides possible par $0$ du motif, on a $(L - k + 1 + t)*4^t$ k-mers de taille k possible, ce qui développe de façon exponentielle les resultats. Afin de ne pas saturer la RAM, l'approche actuelle, malgré son côté récursif, est très peu gourmande en mémoire car elle ne stocke aucun des kmers obtenus mais les affiche immédiatement. De plus, l'algorithme utilise des \textit{mutex} afin de séparer l'affichage des différents \\
+    En conséquence, l'algorithme est bien plus lent que kmerDel, cependant, la taille du fichier n'influe pas sur la quantité de RAM utilisée, ce qui en fait un outil utilisable en pratique.
     \newpage
   \chapter{Autres structures de données recherchées}
     \section{Mot Minimaux Absents (MMAs)}
@@ -237,6 +232,27 @@ TITRE DE L'INTITULE DE STAGE}
       Schema matrice lcs
       Resultats pas au rdv
     \newpage
+  \chapter{Resultats obtenus}
+    \section{kmerDel et kmerExpand}
+      Ici on a utilisé kmerDel et kmerExpand en les groupant afin de reproduire les erreurs d'insertion et de suppression des lectures longues. Différents paramètres ont été essayé:
+      \begin{itemize}
+        \item 16
+      \end{itemize}
+  1.1 16-mers, un trou d’emplacement variable, freq = 5
+=> En ne gardant qu’un trou, mais en le déplaçant (ex : 1011, 1101), on obtient des
+k-mers différents
+En faisant l’union des 16-mers étendus, et des 16-mers espacés des LR, avec un trou
+de taille fixe et d’emplacement variable :
+Trou de longueur 1 :
+Environ 800 millions de 16-mers espacés / étendus dans les LR
+3 092 709 16-mers trouvés dans les SR
+3 536 267 16-mers contigus dans les SR
+Trou de longueur 1 à 2 :
+Environ 1 million 500 mille 16-mers espacés / étendus dans les LR
+3 461 162 16-mers trouvés dans les SR
+3 536 267 16-mers contigus dans les SR
+=> Tout les k-mers sont quasiment trouvés, mais impossible de déterminer les bons /
+mauvais en jouant sur les seuils de fréquence
   \chapter{Conclusion}
     Peu de bon resultats, a part kmerExpand, beaucoup de choses à revoir.
     \newpage
