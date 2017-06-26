@@ -109,27 +109,27 @@ TITRE DE L'INTITULE DE STAGE}
         \textbf{5-mers:} \{AACGG, ACCGT, CCGTT\}
       \subsection{K-mers espacés à insertion}
         Avec les k-mers espacés à insertion, chaque $\mathbf{0}$ du motif correspond à une nucléotide à insérer.\\
-        Toutes les nucléotides possibles pour chaque $\mathbf{0}$ sont extraites, ce qui produit $\mathbf{\left(L - k + 1 + t\right)*4^t}$ k-mers espacés possibles, avec $t$ = nombre de zéros dans le motif.\\
+        Toutes les nucléotides possibles pour chaque $\mathbf{0}$ sont extraites, ce qui produit $\mathbf{\left(L - k + 1 \right)*4^t}$ k-mers espacés possibles, avec $t$ = nombre de zéros dans le motif.\\
 
         \textbf{Ex:} Avec une séquence $\mathbf{x = AACCGGTT}$ et le motif $\mathbf{m = 111011}$, on a les $6$-mers espacés suivants:\\
         \begin{center}\begin{tikzpicture}
           \coordinate (s) at (0, 3);
-          \foreach \xi [count=\i] in {$\mathbf{k_1:}$, $A$, $A$, $C$, \small$\underbrace{A, C, G, T}_{}$, $C$, $G$, $G$, $T$, $T$} {
+          \foreach \xi [count=\i] in {$\mathbf{k_1:}$, $A$, $A$, $C$, \tiny$\underbrace{A, C, G, T}_{}$, $C$, $G$, $G$, $T$, $T$} {
             \node[minimum size=5mm] (x\i) at (s) {\xi};
             \coordinate (s) at ($(s) + (0.8, 0)$);
           }
           \coordinate (s) at (0, 2);
-          \foreach \yi [count=\i] in {$\mathbf{k_2:}$, $A$, $A$, $C$, $C$, \small$\underbrace{A, C, G, T}_{}$, $G$, $G$, $T$, $T$} {
+          \foreach \yi [count=\i] in {$\mathbf{k_2:}$, $A$, $A$, $C$, $C$, \tiny$\underbrace{A, C, G, T}_{}$, $G$, $G$, $T$, $T$} {
             \node[minimum size=5mm] (y\i) at (s) {\yi};
             \coordinate (s) at ($(s) + (0.8, 0)$);
           }
           \coordinate (s) at (0, 1);
-          \foreach \zi [count=\i] in {$\mathbf{k_3:}$, $A$, $A$, $C$, $C$, $G$, \small$\underbrace{A, C, G, T}_{}$, $G$, $T$, $T$} {
+          \foreach \zi [count=\i] in {$\mathbf{k_3:}$, $A$, $A$, $C$, $C$, $G$, \tiny$\underbrace{A, C, G, T}_{}$, $G$, $T$, $T$} {
             \node[minimum size=5mm] (z\i) at (s) {\zi};
             \coordinate (s) at ($(s) + (0.8, 0)$);
           }
           \coordinate (s) at (0, 0);
-          \foreach \mi [count=\i] in {$\mathbf{k_4:}$, $A$, $A$, $C$, $C$, $G$, $G$, \small$\underbrace{A, C, G, T}_{}$, $T$, $T$} {
+          \foreach \mi [count=\i] in {$\mathbf{k_4:}$, $A$, $A$, $C$, $C$, $G$, $G$, \tiny$\underbrace{A, C, G, T}_{}$, $T$, $T$} {
             \node[minimum size=5mm] (m\i) at (s) {\mi};
             \coordinate (s) at ($(s) + (0.8, 0)$);
           }
@@ -201,7 +201,7 @@ TITRE DE L'INTITULE DE STAGE}
       \PourCh{$lecture$ de $lectures$}{
         \Pour{$i = 0;\ i + k \le |lecture|;\ i += 1$}{
           $kmer = lecture[i:k]\;$
-          $kmersExpandRec(kmer, motif, 0)\;$
+          $kmerExpandRec(kmer, motif, 0)\;$
         }
       }
       \caption{kmerExpand}
@@ -209,18 +209,18 @@ TITRE DE L'INTITULE DE STAGE}
     \begin{algorithm}[H]{
       \Entree{chaîne $kmer$, chaîne $nvKmer$, chaîne $motif$, entier $posMotif$, entier $posKmer$}
       \lSi{$posSeed == |motif|$}{$affiche(nvKmer)$}
-      \lSinonSi{$motif[posMotif] \ne 0$}{$kmersExpandRec(kmer, nvKmer + kmer[posKmer], posMotif+1, posKmer+1)$}
+      \lSinonSi{$motif[posMotif] \ne 0$}{$kmerExpandRec(kmer, nvKmer + kmer[posKmer], posMotif+1, posKmer+1)$}
       \Sinon{
-        $kmersExpandRec(kmer, nvKmer + A, posMotif+1, posKmer)$\;
-        $kmersExpandRec(kmer, nvKmer + C, posMotif+1, posKmer)$\;
-        $kmersExpandRec(kmer, nvKmer + G, posMotif+1, posKmer)$\;
-        $kmersExpandRec(kmer, nvKmer + T, posMotif+1, posKmer)$\;
+        $kmerExpandRec(kmer, nvKmer + A, posMotif+1, posKmer)$\;
+        $kmerExpandRec(kmer, nvKmer + C, posMotif+1, posKmer)$\;
+        $kmerExpandRec(kmer, nvKmer + G, posMotif+1, posKmer)$\;
+        $kmerExpandRec(kmer, nvKmer + T, posMotif+1, posKmer)$\;
       }
       \caption{kmerExpandRec}
     }\end{algorithm}
     \large
     L'approche adoptée pour kmerExpand a été différente, en effet, du à la manière dont les k-mers sont construits et à cause de l'explosion de RAM du précédent programme, la technique employée par kmerDel ne pouvait pas fonctionner ici.\\
-    Etant donné qu'il y a quatre nucléotides possible par $0$ du motif, on a $(L - k + 1 + t)*4^t$ k-mers de taille k possible, ce qui développe de façon exponentielle les resultats. Afin de ne pas saturer la RAM, l'approche actuelle, malgré son côté récursif, est très peu gourmande en mémoire car elle ne stocke aucun des kmers obtenus mais les affiche immédiatement. De plus, l'algorithme utilise des \textit{mutex} afin de séparer l'affichage des différents \\
+    Etant donné qu'il y a quatre nucléotides possible par $0$ du motif, on a $(L - k + 1 )*4^t$ k-mers de taille k possible, ce qui développe de façon exponentielle les resultats. Afin de ne pas saturer la RAM, l'approche actuelle, malgré son côté récursif, est très peu gourmande en mémoire car elle ne stocke aucun des kmers obtenus mais les affiche immédiatement. De plus, l'algorithme utilise des \textit{mutex} afin de séparer l'affichage des différents \\
     En conséquence, l'algorithme est bien plus lent que kmerDel, cependant, la taille du fichier n'influe pas sur la quantité de RAM utilisée, ce qui en fait un outil utilisable en pratique.
     \newpage
   \chapter{Autres structures de données recherchées}

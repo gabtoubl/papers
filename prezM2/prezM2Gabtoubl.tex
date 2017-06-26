@@ -3,8 +3,10 @@
 \usetheme[progressbar=frametitle]{metropolis}
 \usepackage[french]{babel}
 \usepackage{datetime, xcolor, amsthm, tikz}
+\usepackage[makeroom]{cancel}
+\usepackage[french]{algorithm2e}
 
-\usetikzlibrary{calc, decorations.pathreplacing}
+\usetikzlibrary{calc, fit, decorations.pathreplacing}
 
 \title{Memoire de stage de Maîtrise IGIS ITA}
 \subtitle{K-mers et k-mers espacés}
@@ -27,27 +29,196 @@
 \renewcommand\qedsymbol{$\blacksquare$}
 
 \begin{document}
-  \maketitle
-  \metroset{block=fill}
+\maketitle
+\metroset{block=fill}
 
-  \section{Introduction}
-    \begin{frame}[fragile]{Recherche exacte}
-    \end{frame}
-
-  \section{Encodage des mots}
-    \begin{frame}[fragile]{Encodage des mots}
-    \end{frame}
-
-  \section{Quelques définitions}
-    \begin{frame}[fragile]{Antécédent}
-    \end{frame}
-
-  \section{Théorèmes découverts}
-    \begin{frame}[fragile]{Idée principale}
-    \end{frame}
-
-\begin{frame}[standout]
-	Conclusion
+\section{Introduction}
+\begin{frame}[fragile]{Introduction}
 \end{frame}
 
+\section{Comptage des k-mers}
+\begin{frame}[fragile]{K-mers}
+  Les k-mers sont des facteurs de séquences ADN.\\
+  \pause
+  \textbf{Ex:} Avec une séquence $x = AACCGGTT$, on a les $k$-mers de taille $6$ ($6$-mers) suivants:\\
+  \pause
+  \begin{center}\begin{tikzpicture}
+    \coordinate (s) at (0, 2);
+    \foreach \xi [count=\i] in {\mathbf{k_1:}, A, A, C, C, G, G, T, T} {
+      \node[minimum size=5mm] (x\i) at (s) {$\xi$};
+      \coordinate (s) at ($(s) + (0.8, 0)$);
+    }
+    \node[draw,rectangle,red,fit=(x2) (x7)] {};
+    \pause
+    \coordinate (s) at (0, 1);
+    \foreach \yi [count=\i] in {\mathbf{k_2:}, A, A, C, C, G, G, T, T} {
+      \node[minimum size=5mm] (y\i) at (s) {$\yi$};
+      \coordinate (s) at ($(s) + (0.8, 0)$);
+    }
+    \node[draw,rectangle,red,fit=(y3) (y8)] {};
+    \pause
+    \coordinate (s) at (0, 0);
+    \foreach \zi [count=\i] in {\mathbf{k_3:}, A, A, C, C, G, G, T, T} {
+      \node[minimum size=5mm] (z\i) at (s) {$\zi$};
+      \coordinate (s) at ($(s) + (0.8, 0)$);
+    }
+    \node[draw,rectangle,red,fit=(z4) (z9)] {};
+  \end{tikzpicture}\end{center}
+\end{frame}
+\begin{frame}[fragile]{K-mers espacés à délétion}
+  Utilisé afin de simuler les erreurs d'insertions sur les lectures longues.\\
+  \pause
+  \textbf{Ex:} Avec une séquence $x = AACCGGTT$ et le motif $m = 111011$, on a les $5$-mers espacés suivants:\\
+  \pause
+  \begin{center}\begin{tikzpicture}
+    \coordinate (s) at (0, 2);
+    \foreach \xi [count=\i] in {\mathbf{k_1:}, A, A, C, \xcancel{C}, G, G, T, T} {
+      \node[minimum size=5mm] (x\i) at (s) {$\xi$};
+      \coordinate (s) at ($(s) + (0.8, 0)$);
+    }
+    \node[draw,rectangle,red,fit=(x2) (x4)] {};
+    \node[draw,rectangle,red,fit=(x6) (x7)] {};
+    \pause
+    \coordinate (s) at (0, 1);
+    \foreach \yi [count=\i] in {\mathbf{k_2:}, A, A, C, C, \xcancel{G}, G, T, T} {
+      \node[minimum size=5mm] (y\i) at (s) {$\yi$};
+      \coordinate (s) at ($(s) + (0.8, 0)$);
+    }
+    \node[draw,rectangle,red,fit=(y3) (y5)] {};
+    \node[draw,rectangle,red,fit=(y7) (y8)] {};
+    \pause
+    \coordinate (s) at (0, 0);
+    \foreach \zi [count=\i] in {\mathbf{k_3:}, A, A, C, C, G, \xcancel{G}, T, T} {
+      \node[minimum size=5mm] (z\i) at (s) {$\zi$};
+      \coordinate (s) at ($(s) + (0.8, 0)$);
+    }
+    \node[draw,rectangle,red,fit=(z4) (z6)] {};
+    \node[draw,rectangle,red,fit=(z8) (z9)] {};
+  \end{tikzpicture}\end{center}
+\end{frame}
+\begin{frame}[fragile]{K-mers espacés à insertion}
+  Utilisé afin de simuler les erreurs de délétion sur les lectures longues.\\
+  \pause
+  $\mathbf{(L - k + 1)*4^t}$ k-mers espacés à insertion possibles.\\
+  \pause
+  \textbf{Ex:} Avec une séquence $\mathbf{x = AACCGGTT}$ et le motif $\mathbf{m = 111011}$, on a les $6$-mers espacés suivants:\\
+  \pause
+  \begin{center}\begin{tikzpicture}
+    \coordinate (s) at (0, 3);
+    \foreach \xi [count=\i] in {$\mathbf{k_1:}$, $A$, $A$, $C$, \tiny$\underbrace{A, C, G, T}_{}$, $C$, $G$, $G$, $T$, $T$} {
+      \node[minimum size=5mm] (x\i) at (s) {\xi};
+      \coordinate (s) at ($(s) + (0.8, 0)$);
+    }
+    \node[draw,rectangle,red,fit=(x2) (x7)] {};
+    \pause
+    \coordinate (s) at (0, 2);
+    \foreach \yi [count=\i] in {$\mathbf{k_2:}$, $A$, $A$, $C$, $C$, \tiny$\underbrace{A, C, G, T}_{}$, $G$, $G$, $T$, $T$} {
+      \node[minimum size=5mm] (y\i) at (s) {\yi};
+      \coordinate (s) at ($(s) + (0.8, 0)$);
+    }
+    \node[draw,rectangle,red,fit=(y3) (y8)] {};
+    \pause
+    \coordinate (s) at (0, 1);
+    \foreach \zi [count=\i] in {$\mathbf{k_3:}$, $A$, $A$, $C$, $C$, $G$, \tiny$\underbrace{A, C, G, T}_{}$, $G$, $T$, $T$} {
+      \node[minimum size=5mm] (z\i) at (s) {\zi};
+      \coordinate (s) at ($(s) + (0.8, 0)$);
+    }
+    \node[draw,rectangle,red,fit=(z4) (z9)] {};
+    \pause
+    \coordinate (s) at (0, 0);
+    \foreach \mi [count=\i] in {$\mathbf{k_4:}$, $A$, $A$, $C$, $C$, $G$, $G$, \tiny$\underbrace{A, C, G, T}_{}$, $T$, $T$} {
+      \node[minimum size=5mm] (m\i) at (s) {\mi};
+      \coordinate (s) at ($(s) + (0.8, 0)$);
+    }
+    \node[draw,rectangle,red,fit=(m5) (m10)] {};
+  \end{tikzpicture}\end{center}
+\end{frame}
+
+\section{KmersDel}
+\begin{frame}[fragile]{KmersDel}
+  \scriptsize
+  \begin{algorithm}[H]{
+    \Entree{table\_hachage $table$, chaînes $lectures$, chaîne $motif$, entier $k$}
+    \pause
+    \PourCh{$lecture$ de $lectures$}{
+      \pause
+      \Pour{$i = 0;\ i + k \le |lecture|;\ i += 1$}{
+        $kmerEntier = 0$\;
+        $kmer = ""$\;
+        \pause
+        \Pour{$j = 0;\ j < k;\ j += 1$}{
+          \lSi{$motif[j] \ne 0$}{$kmer = kmer + lecture[i + j]$}
+        }
+        \pause
+        \PourCh{$nucleotide$ de $kmer$}{
+          $kmerEntier *= 4$\;
+          \Suivant{valeur de $nucleotide$}{
+            \lCas{A}{}
+            \lCas{C}{$kmerEntier += 1$}
+            \lCas{G}{$kmerEntier += 2$}
+            \lCas{T}{$kmerEntier += 3$}
+          }
+        }
+        \pause
+        $table[kmerEntier] += 1$\;
+      }
+    }
+  }\end{algorithm}
+  \normalsize
+\end{frame}
+
+\section{KmersExpand}
+\begin{frame}[fragile]{KmersExpand}
+  \textbf{\normalsize kmerExpand}
+  \pause
+  \scriptsize
+  \begin{algorithm}[H]{
+    \Entree{chaînes $lectures$, chaîne $motif$, entier $k$}
+    \pause
+    \PourCh{$lecture$ de $lectures$}{
+      \pause
+      \Pour{$i = 0;\ i + k \le |lecture|;\ i += 1$}{
+        $kmer = lecture[i:k]\;$
+        $kmerExpandRec(kmer, motif, 0)\;$
+      }
+    }
+  }\end{algorithm}
+  \pause
+  \textbf{\normalsize kmerExpandRec}
+  \begin{algorithm}[H]{
+    \Entree{chaîne $kmer$, chaîne $nvKmer$, chaîne $motif$, entier $posMotif$, entier $posKmer$}
+    \pause
+    \lSi{$posSeed == |motif|$}{$affiche(nvKmer)$}
+    \pause
+    \lSinonSi{$motif[posMotif] \ne 0$}{$kmersExpandRec(kmer, nvKmer + kmer[posKmer], posMotif+1, posKmer+1)$}
+    \pause
+    \Sinon{
+      $kmersExpandRec(kmer, nvKmer + A, posMotif+1, posKmer)$\;
+      $kmersExpandRec(kmer, nvKmer + C, posMotif+1, posKmer)$\;
+      $kmersExpandRec(kmer, nvKmer + G, posMotif+1, posKmer)$\;
+      $kmersExpandRec(kmer, nvKmer + T, posMotif+1, posKmer)$\;
+    }
+  }\end{algorithm}
+  \normalsize
+\end{frame}
+
+\section{Mots Minimaux absents (MMA)}
+\begin{frame}[fragile]{Mots Minimaux absents (MMA)}
+\end{frame}
+
+\section{Plus long sous-mot commun (PLS)}
+\begin{frame}[fragile]{Plus long sous-mot commun (PLS)}
+\end{frame}
+
+\section{Résultats obtenus}
+\begin{frame}[fragile]{Résultats: KmersDel et kmersExpand}
+\end{frame}
+\begin{frame}[fragile]{Résultats: Mots Minimaux absents (MMA)}
+\end{frame}
+\begin{frame}[fragile]{Résultats: Plus long sous-mot commun (PLS)}
+\end{frame}
+
+\begin{frame}[standout]
+Conclusion
+\end{frame}
 \end{document}
