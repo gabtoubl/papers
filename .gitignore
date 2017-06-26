@@ -4,4 +4,8 @@
 *.log
 *.toc
 *.ps
+*.nav
+*.out
+*.snm
+*.vrb
 *~
