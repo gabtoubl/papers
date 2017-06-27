@@ -8,7 +8,7 @@
 
 \usetikzlibrary{calc, fit, decorations.pathreplacing}
 
-\title{Memoire de stage de Maîtrise IGIS ITA}
+\title{Stage de Maîtrise IGIS ITA}
 \subtitle{K-mers et k-mers espacés}
 \date{\formatdate{26}{01}{2017}}
 \author{Gabriel Toublanc}
@@ -34,13 +34,18 @@
 
 \section{Introduction}
 \begin{frame}[fragile]{Introduction}
+  Séquençage ADN:
+  \begin{itemize}[<+-| alert@+>]
+    \item Lectures courtes (2005)
+    \item Lectures longues (2010)
+  \end{itemize}
 \end{frame}
 
 \section{Comptage des k-mers}
 \begin{frame}[fragile]{K-mers}
   Les k-mers sont des facteurs de séquences ADN.\\
   \pause
-  \textbf{Ex:} Avec une séquence $x = AACCGGTT$, on a les $k$-mers de taille $6$ ($6$-mers) suivants:\\
+  \textbf{Ex:} Avec la séquence $x = AACCGGTT$, on obtient les $k$-mers de taille $6$ ($6$-mers) suivants:\\
   \pause
   \begin{center}\begin{tikzpicture}
     \coordinate (s) at (0, 2);
@@ -68,7 +73,7 @@
 \begin{frame}[fragile]{K-mers espacés à délétion}
   Utilisé afin de simuler les erreurs d'insertions sur les lectures longues.\\
   \pause
-  \textbf{Ex:} Avec une séquence $x = AACCGGTT$ et le motif $m = 111011$, on a les $5$-mers espacés suivants:\\
+  \textbf{Ex:} Avec la séquence $x = AACCGGTT$ et le motif $m = 111011$, on obtient les $5$-mers espacés suivants:\\
   \pause
   \begin{center}\begin{tikzpicture}
     \coordinate (s) at (0, 2);
@@ -101,7 +106,7 @@
   \pause
   $\mathbf{(L - k + 1)*4^t}$ k-mers espacés à insertion possibles.\\
   \pause
-  \textbf{Ex:} Avec une séquence $\mathbf{x = AACCGGTT}$ et le motif $\mathbf{m = 111011}$, on a les $6$-mers espacés suivants:\\
+  \textbf{Ex:} Avec la séquence $\mathbf{x = AACCGGTT}$ et le motif $\mathbf{m = 111011}$, on obtient les $6$-mers espacés suivants:\\
   \pause
   \begin{center}\begin{tikzpicture}
     \coordinate (s) at (0, 3);
@@ -202,20 +207,20 @@
   \normalsize
 \end{frame}
 
-\section{Mots Minimaux absents (MMA)}
-\begin{frame}[fragile]{Mots Minimaux absents (MMA)}
+\section{Mots Minimaux absents}
+\begin{frame}[fragile]{Mots Minimaux absents}
 \end{frame}
 
-\section{Plus long sous-mot commun (PLS)}
-\begin{frame}[fragile]{Plus long sous-mot commun (PLS)}
+\section{Plus long sous-mot commun}
+\begin{frame}[fragile]{Plus long sous-mot commun}
 \end{frame}
 
 \section{Résultats obtenus}
 \begin{frame}[fragile]{Résultats: KmersDel et kmersExpand}
 \end{frame}
-\begin{frame}[fragile]{Résultats: Mots Minimaux absents (MMA)}
+\begin{frame}[fragile]{Résultats: Mots Minimaux absents}
 \end{frame}
-\begin{frame}[fragile]{Résultats: Plus long sous-mot commun (PLS)}
+\begin{frame}[fragile]{Résultats: Plus long sous-mot commun}
 \end{frame}
 
 \begin{frame}[standout]
