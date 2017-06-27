@@ -11,9 +11,11 @@
 \usepackage{tikz}
 \usepackage{mathtools}
 \usepackage[makeroom]{cancel}
+\usepackage{etoolbox}
 
 \usetikzlibrary{calc, fit, decorations.pathreplacing}
 \thispagestyle{empty}
+\patchcmd{\thebibliography}{\section*{\refname}}{}{}{}
 
 \newgray{grispale}{0.7}
 \newgray{grismoy}{0.5}
@@ -59,7 +61,7 @@
 \begin{poster}
 
 \begin{center}
-  \mainTitle{Lecture de séquences ADN: K-mers et K-mers espacés}
+  \mainTitle{Lecture de séquences ADN: \textit{K}-mers et \textit{K}-mers espacés}
   \vspace*{1cm}
   \begin{tabular}{ccccc}
     \begin{minipage}[b]{0.2\textwidth}\centering\includegraphics[height=50mm]{logo_normandie.png}\end{minipage} &
@@ -76,25 +78,25 @@
 
 \begin{multicols}{2}
   \large \subTitle{Introduction}
-    L'analyse de séquençage ADN appliqué à la Bio-Informatique a connu un développement important dans les années 2000.\skipLine
-    Le séquençage ADN est effectué de deux façons différentes, par le biais de lectures sur des brins d'ADN:
+    Les séquenceurs ADN ont connu un développement important depuis le milieu des années 2000, ce qui a permis à la bioinformatique de développer de nouvelle technique d'analyse.\skipLine
+    Le séquençage ADN est constitué de deux principales familles de lectures :\\
     \begin{itemize}
       \setlength{\itemindent}{30mm}
       \renewcommand{\labelitemi}{$\longrightarrow$}
-      \item \textbf{Les lectures longues} (Nanopore, PacBio, ...)
       \item \textbf{Les lectures courtes} (Illumina, Roche, ...)
+      \item \textbf{Les lectures longues} (Nanopore, PacBio, ...)
     \end{itemize}\vspace*{1cm}
-    Les \textbf{lectures longues} ont l'avantage de nécessiter que d'\textbf{une petite quantité} d'entre elles pour quadriller le génome d'un être vivant, mais le gros désavantage d'être \textbf{hautement imprécises} (15 à 30 \% d'erreurs)\skipLine[0.3cm]
+    Les \textbf{lectures courtes} ont le net avantage d'être \textbf{très précises}, avec un taux d'erreur de moins de 1 \%, la plupart étant des erreurs de substitution. Leur principal inconvénient est que \textbf{de nombreuses lectures} courtes sont nécessaire afin de reconstruire le génome, ce qui est coûteux et peu pratique.\skipLine[0.3cm]
 
-    Les \textbf{lectures courtes}, en revanche, ont le net avantage d'être \textbf{très précises}, avec un taux d'erreur de moins de 1 \%. Leur inconvénient principal est qu'il faut \textbf{de nombreuses lectures} courtes afin de reconstruire le génome, ce qui est coûteux et peu pratique.\skipLine[0.3cm]
+    Les \textbf{lectures longues}, en revanche, ont l'avantage de ne nécessiter que d'\textbf{une petite quantité} d'entre elles pour couvrir le génome d'un être vivant, mais le gros désavantage d'être \textbf{hautement imprécises} (15 à 30 \% d'erreurs), principalement des erreurs d'insertions et de délétion.\skipLine[0.3cm]
 
-    Dans les faits, le génome peut être reconstruit grâce à un nombre déraisonnable de lectures courtes, ou en corrigeant les lectures longues grâce aux lectures courtes. Plusieurs \textbf{méthodes de corrections} ont été développées à ce sujet \cite{Morisse2017}.\skipLine[0.3cm]
+    Dans les faits, le génome peut être reconstruit grâce à un nombre déraisonnable de lectures courtes, qui produiront un génome trop fragmenté, ou en assemblant les lectures longues corrigées par les lectures courtes. Plusieurs \textbf{méthodes de corrections} ont été développées à ce sujet \cite{Morisse2017}.\skipLine[0.3cm]
 
-    Afin de pouvoir se passer des lectures courtes, et d'ainsi corriger les lectures longues d'elles-mêmes, une branche de la bioinformatique s'intéresse à l'étude des \textbf{k-mers}.\skipLine
-  \subTitle{K-mers}
-    Les \textbf{k-mers} sont les facteurs de taille $\mathbf{k}$ d'une séquence ADN donnée. Pour une lecture de taille $\mathbf{L}$, on a donc $\mathbf{L - k + 1}$ k-mers possibles.\skipLine
+    L'étude des \textbf{\textit{k}-mers} des lectures longues a pour but de pouvoir corriger les lectures longues par elles-mêmes, et ainsi de pouvoir se passer des lectures courtes.\skipLine
+  \subTitle{\textit{K}-mers}
+    Un \textbf{\textit{k}-mer} est un facteur de taille $\mathbf{k}$ d'une séquence ADN donnée. Pour une séquence de taille $\mathbf{L}$, on a donc $\mathbf{L - \mathit{k} + 1}$ \textit{k}-mers possibles.\skipLine
     \pbox{0.9\columnwidth}{}{linewidth=2mm,framearc=0.1,linecolor=lblue,fillstyle=gradient,gradangle=0,gradbegin=white,gradend=white,gradmidpoint=1.0,framesep=1em}{
-      \textbf{Ex:} Avec une séquence $x = AACCGGTT$, on a les $k$-mers de taille $6$ ($6$-mers) suivants:\\
+      \textbf{Ex:} Avec la séquence $\mathbf{s= AACCGGTT}$, on obtient les $k$-mers de taille $6$ ($6$-mers) suivants:\\
       \begin{center}\begin{tikzpicture}
         \coordinate (s) at (0, 6);
         \foreach \xi [count=\i] in {\mathbf{k_1:}, A, A, C, C, G, G, T, T} {
@@ -117,22 +119,21 @@
       \end{tikzpicture}\end{center}
       \textbf{6-mers:} \{AACCGG, ACCGGT, CCGGTT\}
     } \skipLine
-    Afin d'énumérer les k-mers de grands jeux de données, divers outils logiciels ont été développés. L'objectif de ces outils est d'extraire les k-mers de façon à \textbf{grouper} les doublons, d'avoir un \textbf{temps d'exécution} viable et d'utiliser le moins d'\textbf{espace mémoire} possible.\skipLine
+    Afin d'énumérer les \textit{k}-mers de grands jeux de données, divers outils logiciels ont été développés. L'objectif de ces outils est d'extraire les \textit{k}-mers, \textbf{leur nombre d'occurences}, d'avoir un \textbf{temps d'exécution} viable et d'utiliser le moins d'\textbf{espace mémoire} possible.\skipLine
 
     Le logiciel \textbf{Jellyfish} \cite{Marcais2011} surpasse ses concurrents dans ce domaine, avec des performances bien supérieures, tout facteur confondu.\skipLine
 
-    Les k-mers ainsi extraits sont principalement utilisés pour \textbf{l'alignement et l'assemblage} de lectures.\skipLine
+    Les \textit{k}-mers sont principalement utilisés pour \textbf{l'alignement et l'assemblage} de lectures.\skipLine
 
-    Dans le cas présent, l'utilisation des k-mers a pour but de \textbf{trouver des répétitions} au sein des lectures longues afin de pouvoir \textbf{identifier les nucléotides erronées}, afin de pouvoir les corriger.
+    Dans le cas présent, l'utilisation des \textit{k}-mers a pour but de \textbf{trouver des répétitions} au sein des lectures longues afin de pouvoir \textbf{identifier les nucléotides erronées}, et de les corriger.
   \newpage
-  \subTitle{K-mers espacés à délétion}
-    Les \textbf{k-mers espacés} sont utilisés afin de simuler les erreurs d'insertions et de délétions sur les lectures longues.\\
-    Au lieu de prendre les facteurs de taille k d'une séquence, on va sélectionner les k-mers espacés selon un motif précis.\skipLine
+  \subTitle{\textit{K}-mers espacés à délétion}
+    Les \textbf{\textit{k}-mers espacés} sont utilisés afin de simuler des corrections aux erreurs d'insertions et de délétions sur les lectures longues. Au lieu de prendre les facteurs de taille \textit{k} d'une séquence, on va sélectionner les \textit{k}-mers espacés selon un motif précis.\skipLine
 
-    Avec les \textbf{k-mers espacés à délétion}, chaque $\mathbf{0}$ du motif correspond à une nucléotide à supprimer.\\
-    Par ex, un motif $\mathbf{m=111011}$ créera tous les $5$-mers espacés à partir des $6$-mers en supprimant le $4^{eme}$ nucléotide.\skipLine
+    Avec les \textbf{\textit{k}-mers espacés à délétion}, chaque $\mathbf{0}$ du motif correspond à un nucléotide à supprimer.\\
+    Par ex, un motif $\mathbf{m=111011}$ permettra d'extraire tous les $5$-mers espacés à partir des $6$-mers en supprimant le $4^{eme}$ nucléotide.\skipLine
     \pbox{0.9\columnwidth}{}{linewidth=2mm,framearc=0.1,linecolor=lblue,fillstyle=gradient,gradangle=0,gradbegin=white,gradend=white,gradmidpoint=1.0,framesep=1em}{
-      \textbf{Ex:} Avec une séquence $x = AACCGGTT$ et le motif $m = 111011$, on a les $5$-mers espacés suivants:\skipLine
+      \textbf{Ex:} Avec la séquence $\mathbf{s = AACCGGTT}$ et le motif $m = 111011$, on obtient les $5$-mers espacés suivants:\skipLine
       \begin{center}\begin{tikzpicture}
         \coordinate (s) at (0, 6);
         \foreach \xi [count=\i] in {\mathbf{k_1:}, A, A, C, \xcancel{C}, G, G, T, T} {
@@ -158,11 +159,11 @@
       \end{tikzpicture}\end{center}
       \textbf{5-mers:} \{AACGG, ACCGT, CCGTT\}
     } \skipLine[0.1cm]
-    \subTitle{K-mers espacés à insertion}
-      Avec les \textbf{k-mers espacés à insertion}, chaque $\mathbf{0}$ du motif correspond à une nucléotide à insérer.\\
-      Toutes les nucléotides possibles pour chaque $\mathbf{0}$ sont extraites, ce qui produit $\mathbf{\left(L - k + 1 \right)*4^t}$ k-mers espacés possibles, avec $\mathbf{t = \text{nombre de zéros dans le motif}}$.\skipLine
+    \subTitle{\textit{K}-mers espacés à insertion}
+      Avec les \textbf{\textit{k}-mers espacés à insertion}, chaque $\mathbf{0}$ du motif correspond à un nucléotide à insérer.\\
+      Tous les nucléotides possibles pour chaque $\mathbf{0}$ sont ajoutés, ce qui produit $\mathbf{4^t}$ fois plus \textit{k}-mers, avec $\mathbf{t = }$nombre de zéros dans le motif.\skipLine
       \pbox{0.9\columnwidth}{}{linewidth=2mm,framearc=0.1,linecolor=lblue,fillstyle=gradient,gradangle=0,gradbegin=white,gradend=white,gradmidpoint=1.0,framesep=1em}{
-        \textbf{Ex:} Avec une séquence $\mathbf{x = AACCGGTT}$ et le motif $\mathbf{m = 111011}$, on a les $6$-mers espacés suivants:\skipLine
+        \textbf{Ex:} Avec la séquence $\mathbf{s = AACCGGTT}$ et le motif $\mathbf{m = 111011}$, on obtient les $6$-mers espacés suivants:\skipLine
         \begin{center}\begin{tikzpicture}
           \coordinate (s) at (0, 9);
           \foreach \xi [count=\i] in {$\mathbf{k_1:}$, $A$, $A$, $C$, \small$\underbrace{A, C, G, T}_{}$, $C$, $G$, $G$, $T$, $T$} {
@@ -189,12 +190,12 @@
           \node[draw,rectangle,red,fit=(z4) (z9)] {};
           \node[draw,rectangle,red,fit=(m5) (m10)] {};
         \end{tikzpicture}\end{center}
-        \textbf{6-mers:} \{
-          AAC\textbf{A}CG, AAC\textbf{C}CG, AAC\textbf{G}CG, AAC\textbf{T}CG,
-          ACC\textbf{A}GG, ACC\textbf{C}GG, ACC\textbf{G}GG, ACC\textbf{T}GG,
-          CCG\textbf{A}GT, CCG\textbf{C}GT, CCG\textbf{G}GT, CCG\textbf{T}GT,
-          CGG\textbf{A}TT, CGG\textbf{C}TT, CGG\textbf{G}TT, CGG\textbf{T}TT
-        \}
+        \textbf{6-mers:} $\left\{\text{\begin{tabular}{llll}
+          AAC\textbf{A}CG, &ACC\textbf{A}GG, &CCG\textbf{A}GT, &CGG\textbf{A}TT,\\
+          AAC\textbf{C}CG, &ACC\textbf{C}GG, &CCG\textbf{C}GT, &CGG\textbf{C}TT,\\
+          AAC\textbf{G}CG, &ACC\textbf{G}GG, &CCG\textbf{G}GT, &CGG\textbf{G}TT,\\
+          AAC\textbf{T}CG, &ACC\textbf{T}GG, &CCG\textbf{T}GT, &CGG\textbf{T}TT\\
+        \end{tabular}}\right\}$
       }\skipLine[0.5cm]
   \subTitle{Références}
     \bibliographystyle{unsrt}
