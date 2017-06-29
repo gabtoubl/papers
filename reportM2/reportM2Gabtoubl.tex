@@ -144,15 +144,16 @@ TITRE DE L'INTITULE DE STAGE}
           CCG\textbf{A}GT, CCG\textbf{C}GT, CCG\textbf{G}GT, CCG\textbf{T}GT,
           CGG\textbf{A}TT, CGG\textbf{C}TT, CGG\textbf{G}TT, CGG\textbf{T}TT
         \}
-    \section{Etat de la recherche sur les k-mers}
-      Parmi les différents logiciels qui permettent le comptage des k-mers simples, nous avons cité l'outil \textbf{Jellyfish} \cite{Marcais2011} qui est de très loin de plus efficace (500Mo en moins de 15s, avec 8 threads), et qui est spécialisé dans l'approche \textit{multi-threading}.\\
+    \section{État de la recherche sur les k-mers}
+      Parmi les différents logiciels qui permettent le comptage des k-mers simples, nous avons cité l'outil \textbf{Jellyfish} \cite{Marcais2011} qui est de très loin le plus efficace (500Mo en moins de 15s, avec 8 threads), et qui est spécialisé dans l'approche \textit{multi-threading}.\\
 
-      En revanche, en ce qui concerne les k-mers espacés, les outils sont encore peu nombreux et innefficace.
-      Dans le cadre de ce stage de recherche, nous avons pris contact avec une équipe de chercheur de l'université de Montpellier. Cette équipe développe actuellement un outil nommé \textbf{gkampi}, permettant de faire de l'extraction de k-mers simples ou espacés à délétion.\\
+      En revanche, en ce qui concerne les k-mers espacés, les outils sont encore peu nombreux et inefficaces.
+      Dans le cadre de ce stage de recherche, nous avons pris contact avec une équipe de chercheurs de l'Université de Montpellier. Cette équipe développe actuellement un outil nommé \textbf{GkAmpi}TODO citer alban mancheron, permettant de faire de l'extraction de k-mers simples ou espacés à délétion.\\
 
-      Cependant au moment de l'écriture de ce rapport, l'outil est encore au stade experimental, et souffre de performances en vitesse peu satisfaisante, même si elle profite d'une utilisation RAM très optimale. De plus, le logiciel permet d'extraire les k-mers espacés à délétion, mais pas ceux à insertion ou substitution.\\
+      Cependant au moment de l'écriture de ce rapport, l'outil est encore au stade experimental, et souffre de performances en vitesse peu satisfaisantes, même s'il profite d'une utilisation RAM très optimale. De plus, le logiciel permet d'extraire les k-mers espacés à délétion, mais pas ceux à insertion.\\
 
       C'est à partir de cet état de fait que j'ai entrepris de développer mes propres logiciels, \textbf{kmerDel} et \textbf{kmerExpand}.
+TODO IMPLEMENTATION: kmerdel et kmerExpAnd
   \chapter{K-mers espacés à délétion: kmerDel}
     KmerDel a pour but d'extraire les k-mers espacés à délétion, en utilisant le principe d'une table de hachage afin de grouper les doublons.\bigskip\\
     \normalsize
@@ -178,21 +179,21 @@ TITRE DE L'INTITULE DE STAGE}
         }
       }
       \caption{kmerDel}
-    }\end{algorithm}
+    }\end{algorithm}\bigskip
     \large
-    Pour chaque lecture traitée, on fait passer le motif en fenêtre glissante afin de recolter tous les k-mers, puis on ajoute le kmer à la table s'il n'existe pas déjà. Afin de gagner en espace mémoire, le kmer est converti en base 4 avant d'être stocké.\\
+    Pour chaque lecture traitée, on fait passer le motif en fenêtre glissante afin de récolter tous les k-mers, puis on ajoute le k-mer à la table s'il n'est pas déjà présent. Afin de gagner en espace mémoire, le k-mer est converti en base 4 avant d'être stocké.\\
 
-    La table de hachage a subit divers améliorations au fil du temps:\\
+    La table de hachage a subi diverses améliorations au fil du temps:\\
     \begin{itemize}
-      \item C'était au début un type \textbf{map} de la librairie STL du C++, et le programme n'utilisait qu'un seul thread.
-      \item Le développement du multi-thread permet de traiter l'information plus efficacement en parrallèlisant le traitement. Au lieu d'avoir une seule table, le programme créé $t = \text{nombre de threads}$ tables, qui sont ensuite fusionnées ensemble. La duplication du nombre de tables est dû au fait que les conteneurs de la STL ne sont pas \textit{thread-safe}, c'est à dire que la modification d'un même élément au sein de différent threads donne lieu à des comportements non-définis.
-      \item La table de hachage est devenu une \textbf{unordered\_map} (c++11), qui a l'avantage d'être quatre fois plus rapide en temps d'exécution que \textbf{map}, en contrepartie du fait qu'elle ne trie plus ses éléments par ordre croissant.
+      \item C'était au début un type \textbf{map} de la librairie STL du C++, et le programme n'utilisait qu'un seul thread.\\
+      \item Le développement du \textit{multi-thread} permet de traiter l'information plus efficacement en parrallélisant le traitement. Au lieu d'avoir une seule table, le programme créé $\mathbf{t}$ tables (où $\mathbf{t}$ est le nombre de threads), qui sont ensuite fusionnées ensemble. La duplication du nombre de tables est dû au fait que les conteneurs de la STL ne sont pas \textit{thread-safe}, c'est à dire que la modification d'un même élément au sein de différents threads donne lieu à des comportements non-définis.\\
+      \item La table de hachage est devenu une \textbf{unordered\_map} (c++11), qui a l'avantage d'être quatre fois plus rapide en temps d'exécution que \textbf{map}, en contrepartie du fait qu'elle ne trie plus ses éléments par ordre croissant.\\
       \item Enfin après diverses recherches, la table est devenu une \textbf{cuckoohash\_map} qui est un type issu de la librairie indépendante \textbf{libcuckoo} \cite{Cuckoo2013} \cite{Cuckoo2014}. Cette librairie, en plus d'être bien plus performante que les conteneurs de la STL, a pour avantage d'être \textit{thread-safe}, ce qui a permis de ne conserver qu'une seule table pour tous les threads, décuplant alors les performances du programme.
     \end{itemize}\bigskip
 
-    Au niveau de l'affichage, une amélioration en vitesse importante à été effectuée en replacant les affichage du programme par un \textit{buffer} qui stocke les lignes en mémoire avant de les afficher.\\
+    Au niveau de l'affichage, une amélioration en vitesse importante à été effectuée en remplaçant les affichages du programme par un \textit{buffer} qui stocke les lignes en mémoire avant de les afficher.\\
 
-    Avec ce programme simple mais efficace, nous avons réussi à se rapprocher des performance du ténor du genre, Jellyfish. En effet, pour un fichier de 500Mo de lectures, Jellyfish met environ 13 secondes contre 17 pour kmerDel. L'avantage de kmerDel est qu'il permet, contrairement à Jellyfish, de compter les k-mers espacés à délétions. En contrepartie, kmerDel utilise beaucoup plus de RAM que Jellyfish dès que l'on augmente la taille de k, ce qui le rend moins utilisable en pratique.
+    Avec ce programme simple mais efficace, nous avons réussi à se rapprocher des performance du ténor du genre, Jellyfish. En effet, pour un fichier de 500Mo de lectures, Jellyfish met environ 13 secondes contre 17 secondes pour kmerDel. L'avantage de kmerDel est qu'il permet, contrairement à Jellyfish, de compter les k-mers espacés à délétion. En contrepartie, kmerDel utilise beaucoup plus de RAM que Jellyfish dès que l'on augmente la taille de k, ce qui le rend moins utilisable en pratique.
     \newpage
   \chapter{K-mers espacés à insertion: kmerExpand}
     \normalsize
@@ -217,12 +218,13 @@ TITRE DE L'INTITULE DE STAGE}
         $kmerExpandRec(kmer, nvKmer + T, posMotif+1, posKmer)$\;
       }
       \caption{kmerExpandRec}
-    }\end{algorithm}
+    }\end{algorithm}\bigskip
     \large
     L'approche adoptée pour kmerExpand a été différente, en effet, du à la manière dont les k-mers sont construits et à cause de l'explosion de RAM du précédent programme, la technique employée par kmerDel ne pouvait pas fonctionner ici.\\
-    Etant donné qu'il y a quatre nucléotides possible par $0$ du motif, on a $(L - k + 1 )*4^t$ k-mers de taille k possible, ce qui développe de façon exponentielle les resultats. Afin de ne pas saturer la RAM, l'approche actuelle, malgré son côté récursif, est très peu gourmande en mémoire car elle ne stocke aucun des kmers obtenus mais les affiche immédiatement. De plus, l'algorithme utilise des \textit{mutex} afin de séparer l'affichage des différents \\
+    Etant donné qu'il y a quatre nucléotides possible par $0$ du motif, on a $(L - k + 1 )*4^t$ $k$-mers possibles, ce qui développe de façon exponentielle les résultats. Afin de ne pas saturer la RAM, l'approche actuelle, malgré son côté récursif, est très peu gourmande en mémoire car elle ne stocke aucun des kmers obtenus mais les affiche immédiatement. De plus, l'algorithme utilise des \textit{mutex} afin de séparer l'affichage des différents threads.\\
     En conséquence, l'algorithme est bien plus lent que kmerDel, cependant, la taille du fichier n'influe pas sur la quantité de RAM utilisée, ce qui en fait un outil utilisable en pratique.
     \newpage
+    PAS STRUCTURE TODO
   \chapter{Autres structures de données recherchées}
     \section{Mot Minimaux Absents (MMAs)}
       Explication wikipedia + pierre\\
@@ -232,7 +234,7 @@ TITRE DE L'INTITULE DE STAGE}
       Schema matrice lcs
       Resultats pas au rdv
     \newpage
-  \chapter{Resultats obtenus}
+  \chapter{Résultats obtenus}
     \section{kmerDel et kmerExpand}
       Ici on a utilisé kmerDel et kmerExpand en les groupant afin de reproduire les erreurs d'insertion et de suppression des lectures longues. Différents paramètres ont été essayé:
       \begin{itemize}
