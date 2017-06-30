@@ -32,31 +32,31 @@ Bioinformatique, découverte de motifs entre des ensembles de fragments d’ADN}
   \chapter*{Introduction}
   \addcontentsline{toc}{chapter}{Introduction}
     \section*{Cadre}
-      Ce mémoire a été rédigé dans le cadre de mon stage de fin de Master IGIS ITA, dans le but de réaliser un rapport complet sur l'ensemble du travail effectué. Ce stage s'est déroulé du $1^{er}$ avril au 30 juin 2017, au sein de l'équipe TIBS du laboratoire LITIS de l'Université de Rouen, dans le batiment Monod puis CurieB sur le campus de Mont-Saint-Aignan.\\
+      Ce mémoire a été rédigé dans le cadre de mon stage de fin de Master IGIS ITA, dans le but de réaliser un rapport complet sur l'ensemble du travail effectué. Ce stage s'est déroulé du $1^{er}$ avril au 30 juin 2017, au sein de l'équipe TIBS du laboratoire LITIS de l'Université de Rouen, dans le bâtiment Monod puis CuriB sur le campus de Mont-Saint-Aignan.\\
 
       Les travaux de cette équipe portent principalement sur la recherche, l’indexation et l’extraction d’informations pertinentes dans des données biologiques et des systèmes d’information en santé, et offrent donc de nombreuses applications dans ces domaines.\\
 
       Ce stage a été financé par le LITIS, grâce à des fonds alloués par l’Université de Rouen, destinés à permettre l’accueil de stagiaires de seconde année de Master Recherche.
     \section*{Contexte}
-    Les séquenceurs ADN ont connu un développement important depuis le milieu des années 2000, ce qui a permis à la bioinformatique de développer de nouvelle technique d'analyse.\\
+    Les séquenceurs ADN ont connu un développement important depuis le milieu des années 2000, ce qui a permis à la bioinformatique de développer de nouvelles techniques d'analyse.\\
 
     Le séquençage ADN est constitué de deux principales familles de lectures :\\
     \begin{itemize}
       \item \textbf{Les lectures courtes} (Illumina, Roche, ...)
       \item \textbf{Les lectures longues} (Nanopore, PacBio, ...)
     \end{itemize}\medskip
-    Les lectures courtes ont le net avantage d'être très précises, avec un taux d'erreur de moins de 1 \%, la plupart étant des erreurs de substitution. Leur principal inconvénient est que de nombreuses lectures courtes sont nécessaire afin de reconstruire le génome, ce qui est coûteux et peu pratique.\\
+    Les lectures courtes ont le net avantage d'être très précises, avec un taux d'erreur de moins de 1 \%, la plupart étant des erreurs de substitution. Leur principal inconvénient est que de nombreuses lectures courtes sont nécessaires afin de reconstruire le génome, ce qui est coûteux et peu pratique.\\
 
     Les lectures longues, en revanche, ont l'avantage de ne nécessiter que d'une petite quantité d'entre elles pour couvrir le génome d'un être vivant, mais le gros désavantage d'être hautement imprécises (15 à 30 \% d'erreurs), principalement des erreurs d'insertions et de délétion.\\
 
     Dans les faits, le génome peut être reconstruit grâce à un nombre déraisonnable de lectures courtes, qui produiront un génome trop fragmenté, ou en assemblant les lectures longues corrigées par les lectures courtes. Plusieurs méthodes de corrections ont été développées à ce sujet \cite{Morisse2017}.\\
 
-    L'étude des $k$-mers des lectures longues a pour but de pouvoir corriger les lectures longues par elles-mêmes, et ainsi de pouvoir se passer des lectures courtes.
+    L'étude des $k$-mers des lectures longues a pour but de pouvoir corriger les lectures longues elles-mêmes, et ainsi de pouvoir se passer des lectures courtes.
     \newpage
   \chapter{Extraction des k-mers}
     \section{K-mers}
-      Les k-mers sont les facteurs de taille $\mathbf{k}$ d'une séquence ADN donnée. Pour une lecture de taille $\mathbf{L}$, on a donc $\mathbf{L - k + 1}$ k-mers possibles.\bigskip\\
-      \textbf{Ex:} Avec une séquence $x = AACCGGTT$, on a les $k$-mers de taille $6$ ($6$-mers) suivants:\\
+      Les k-mers sont les facteurs de longueur $\mathbf{k}$ d'une séquence ADN donnée. Pour une lecture de longueur $\mathbf{L}$, nous avons donc $\mathbf{L - k + 1}$ $k$-mers possibles.\bigskip\\
+      \textbf{Ex :} Avec une séquence $x = AACCGGTT$, nous obtenons les $k$-mers de longueur $6$ ($6$-mers) suivants :\\
       \begin{center}\begin{tikzpicture}
         \coordinate (s) at (0, 2);
         \foreach \xi [count=\i] in {\mathbf{k_1:}, A, A, C, C, G, G, T, T} {
@@ -77,7 +77,7 @@ Bioinformatique, découverte de motifs entre des ensembles de fragments d’ADN}
         \node[draw,rectangle,red,fit=(y3) (y8)] {};
         \node[draw,rectangle,red,fit=(z4) (z9)] {};
       \end{tikzpicture}\end{center}
-      \textbf{6-mers:} \{AACCGG, ACCGGT, CCGGTT\}\bigskip\\
+      \textbf{6-mers :} \{AACCGG, ACCGGT, CCGGTT\}\bigskip\\
 
       Afin d'énumérer les k-mers de grands jeux de données, divers outils logiciels ont été développés. L'objectif de ces outils est d'extraire les k-mers de façon à grouper les doublons, d'avoir un temps d'exécution viable et d'utiliser le moins d'espace mémoire possible.\\
 
@@ -88,11 +88,11 @@ Bioinformatique, découverte de motifs entre des ensembles de fragments d’ADN}
       Dans le cas présent, l'utilisation des k-mers a pour but de trouver des répétitions au sein des lectures longues afin de pouvoir identifier les nucléotides erronées, afin de pouvoir les corriger.
     \section{K-mers espacés}
       Les k-mers espacés sont utilisés afin de simuler des corrections aux erreurs d'insertions et de délétions sur les lectures longues.\\
-      Au lieu de prendre les facteurs de taille k d'une séquence, on va sélectionner les k-mers espacés selon un motif précis.\\
+      Au lieu de prendre les facteurs de longueur $k$ d'une séquence, nous allons sélectionner les k-mers espacés selon un motif précis.\\
       \subsection{K-mers espacés à délétion}
         Avec les k-mers espacés à délétion, chaque $\mathbf{0}$ du motif correspond à une nucléotide à supprimer.\\
         Par ex, un motif $\mathbf{m=111011}$ créera tous les $5$-mers espacés à partir des $6$-mers en supprimant le $4^{eme}$ nucléotide.\bigskip\\
-        \textbf{Ex:} Avec une séquence $x = AACCGGTT$ et le motif $m = 111011$, on a les $5$-mers espacés suivants:\\
+        \textbf{Ex :} Avec une séquence $x = AACCGGTT$ et le motif $m = 111011$, nous obtenons les $5$-mers espacés suivants :\\
         \begin{center}\begin{tikzpicture}
           \coordinate (s) at (0, 2);
           \foreach \xi [count=\i] in {\mathbf{k_1:}, A, A, C, \xcancel{C}, G, G, T, T} {
@@ -116,12 +116,12 @@ Bioinformatique, découverte de motifs entre des ensembles de fragments d’ADN}
           \node[draw,rectangle,red,fit=(z4) (z6)] {};
           \node[draw,rectangle,red,fit=(z8) (z9)] {};
         \end{tikzpicture}\end{center}
-        \textbf{5-mers:} \{AACGG, ACCGT, CCGTT\}
+        \textbf{5-mers :} \{AACGG, ACCGT, CCGTT\}
       \subsection{K-mers espacés à insertion}
         Avec les k-mers espacés à insertion, chaque $\mathbf{0}$ du motif correspond à une nucléotide à insérer.\\
         Toutes les nucléotides possibles pour chaque $\mathbf{0}$ sont extraites, ce qui produit $\mathbf{\left(L - k + 1 \right)*4^t}$ k-mers espacés possibles, avec $t$ = nombre de zéros dans le motif.\\
 
-        \textbf{Ex:} Avec une séquence $\mathbf{x = AACCGGTT}$ et le motif $\mathbf{m = 111011}$, on a les $6$-mers espacés suivants:\\
+        \textbf{Ex :} Avec une séquence $\mathbf{x = AACCGGTT}$ et le motif $\mathbf{m = 111011}$, nous obtenons les $6$-mers espacés suivants :\\
         \begin{center}\begin{tikzpicture}
           \coordinate (s) at (0, 3);
           \foreach \xi [count=\i] in {$\mathbf{k_1:}$, $A$, $A$, $C$, \tiny$\underbrace{A, C, G, T}_{}$, $C$, $G$, $G$, $T$, $T$} {
@@ -148,7 +148,7 @@ Bioinformatique, découverte de motifs entre des ensembles de fragments d’ADN}
           \node[draw,rectangle,red,fit=(z4) (z9)] {};
           \node[draw,rectangle,red,fit=(m5) (m10)] {};
         \end{tikzpicture}\end{center}
-        \textbf{6-mers:} $\left\{\text{\begin{tabular}{llll}
+        \textbf{6-mers :} $\left\{\text{\begin{tabular}{llll}
           AAC\textbf{A}CG, &ACC\textbf{A}GG, &CCG\textbf{A}GT, &CGG\textbf{A}TT,\\
           AAC\textbf{C}CG, &ACC\textbf{C}GG, &CCG\textbf{C}GT, &CGG\textbf{C}TT,\\
           AAC\textbf{G}CG, &ACC\textbf{G}GG, &CCG\textbf{G}GT, &CGG\textbf{G}TT,\\
@@ -164,11 +164,11 @@ Bioinformatique, découverte de motifs entre des ensembles de fragments d’ADN}
 
       C'est à partir de cet état de fait que j'ai entrepris de développer mes propres logiciels, \textbf{kmersDel} et \textbf{kmersExpand}.
   \chapter{Implémentation}
-    \section{K-mers espacés à délétion: kmersDel}
+    \section{K-mers espacés à délétion : kmersDel}
       kmersDel a pour but d'extraire les k-mers espacés à délétion, en utilisant le principe d'une table de hachage afin de grouper les doublons.\bigskip\\
       \normalsize
       \begin{algorithm}[H]{
-        \Entree{table\_hachage $table$, chaînes $lectures$, chaîne $motif$, entier $k$}
+        \Entree{table\_hachage $table$, mots $lectures$, mot $motif$, entier $k$}
         \PourCh{$lecture$ de $lectures$}{
           \Pour{$i = 0;\ i + k \le |lecture|;\ i += 1$}{
             $kmerEntier = 0$\;
@@ -191,27 +191,27 @@ Bioinformatique, découverte de motifs entre des ensembles de fragments d’ADN}
         \caption{kmersDel}
       }\end{algorithm}\bigskip
       \large
-      Pour chaque lecture traitée, on fait passer le motif en fenêtre glissante afin de récolter tous les k-mers, puis on ajoute le k-mer à la table s'il n'est pas déjà présent. Afin de gagner en espace mémoire, le k-mer est converti en base 4 avant d'être stocké.\\
+      Pour chaque lecture traitée, nous faisons passer le motif en fenêtre glissante afin de récolter tous les k-mers, puis nous ajoutons le k-mer à la table s'il n'est pas déjà présent. Afin de gagner en espace mémoire, le k-mer est converti en base 4 avant d'être stocké.\\
 
-      La table de hachage a subi diverses améliorations au fil du temps:\\
+      La table de hachage a subi diverses améliorations au fil du temps :\\
       \begin{itemize}
         \item C'était au début un type \textbf{map} de la librairie STL du C++, et le programme n'utilisait qu'un seul thread.\\
-        \item Le développement du \textit{multi-thread} permet de traiter l'information plus efficacement en parrallélisant le traitement. Au lieu d'avoir une seule table, le programme créé $\mathbf{t}$ tables (où $\mathbf{t}$ est le nombre de threads), qui sont ensuite fusionnées ensemble. La duplication du nombre de tables est dû au fait que les conteneurs de la STL ne sont pas \textit{thread-safe}, c'est à dire que la modification d'un même élément au sein de différents threads donne lieu à des comportements non-définis.\\
-        \item La table de hachage est devenu une \textbf{unordered\_map} (c++11), qui a l'avantage d'être quatre fois plus rapide en temps d'exécution que \textbf{map}, en contrepartie du fait qu'elle ne trie plus ses éléments par ordre croissant.\\
-        \item Enfin après diverses recherches, la table est devenu une \textbf{cuckoohash\_map} qui est un type issu de la librairie indépendante \textbf{libcuckoo} \cite{Cuckoo2013} \cite{Cuckoo2014}. Cette librairie, en plus d'être bien plus performante que les conteneurs de la STL, a pour avantage d'être \textit{thread-safe}, ce qui a permis de ne conserver qu'une seule table pour tous les threads, décuplant alors les performances du programme.
+        \item Le développement du \textit{multi-thread} permet de traiter l'information plus efficacement en parallélisant le traitement. Au lieu d'avoir une seule table, le programme créé $\mathbf{t}$ tables (où $\mathbf{t}$ est le nombre de threads), qui sont ensuite fusionnées ensemble. La duplication du nombre de tables est dû au fait que les conteneurs de la STL ne sont pas \textit{thread-safe}, c'est à dire que la modification d'un même élément au sein de différents threads donne lieu à des comportements non-définis.\\
+        \item La table de hachage est devenue une \textbf{unordered\_map} (c++11), qui a l'avantage d'être quatre fois plus rapide en temps d'exécution que \textbf{map}, en contrepartie du fait qu'elle ne trie plus ses éléments par ordre croissant.\\
+        \item Enfin après diverses recherches, la table est devenue une \textbf{cuckoohash\_map} qui est un type issu de la librairie indépendante \textbf{libcuckoo} \cite{Cuckoo2013} \cite{Cuckoo2014}. Cette librairie, en plus d'être bien plus performante que les conteneurs de la STL, a pour avantage d'être \textit{thread-safe}, ce qui a permis de ne conserver qu'une seule table pour tous les threads, décuplant alors les performances du programme.
       \end{itemize}\bigskip
 
-      Au niveau de l'affichage, une amélioration en vitesse importante à été effectuée en remplaçant les affichages du programme par un \textit{buffer} qui stocke les lignes en mémoire avant de les afficher.\\
+      Au niveau de l'affichage, une amélioration en vitesse importante a été effectuée en remplaçant les affichages du programme par un \textit{buffer} qui stocke les lignes en mémoire avant de les afficher.\\
 
-      Avec ce programme simple mais efficace, nous avons réussi à se rapprocher des performance du ténor du genre, Jellyfish. En effet, pour un fichier de 500Mo de lectures, Jellyfish met environ 13 secondes contre 17 secondes pour kmersDel. L'avantage de kmersDel est qu'il permet, contrairement à Jellyfish, de compter les k-mers espacés à délétion. En contrepartie, kmersDel utilise beaucoup plus de RAM que Jellyfish dès que l'on augmente la taille de k, ce qui le rend moins utilisable en pratique.
+      Avec ce programme simple mais efficace, nous avons réussi à se rapprocher des performances du ténor du genre, Jellyfish. En effet, pour un fichier de 500Mo de lectures, Jellyfish met environ 13 secondes contre 17 secondes pour kmersDel. L'avantage de kmersDel est qu'il permet, contrairement à Jellyfish, de compter les k-mers espacés à délétion. En contrepartie, kmersDel utilise beaucoup plus de RAM que Jellyfish dès que l'on augmente la longueur de k, ce qui le rend moins utilisable en pratique.\\
 
-      Une version de kmersDel à cependant été développée avec les mêmes priorités que kmersExpand: diminuer l'utilisation mémoire en faveur d'une plus large usabilité. Cette version ne stocke pas les $k$-mers extraits dans une table de hachage, mais les affiche directement sur la sortie standard, ce qui implique qu'il n'y a pas de traitement des doublons.
+      Une version de kmersDel a cependant été développée avec les mêmes priorités que kmersExpand : diminuer l'utilisation mémoire en faveur d'une plus large usabilité. Cette version ne stocke pas les $k$-mers extraits dans une table de hachage, mais les affiche directement sur la sortie standard, ce qui implique qu'il n'y a pas de traitement des doublons.\\
 
-      Couplé avec Jellyfish, cela permet néanmoins de pouvoir traiter des $k$-mers de taille arbitraire.
-    \section{K-mers espacés à insertion: kmersExpand}
+      Couplé avec Jellyfish, cela permet néanmoins de pouvoir traiter des $k$-mers de longueur arbitraire.
+    \section{K-mers espacés à insertion : kmersExpand}
       \normalsize
       \begin{algorithm}[H]{
-        \Entree{chaînes $lectures$, chaîne $motif$, entier $k$}
+        \Entree{mots $lectures$, mot $motif$, entier $k$}
         \PourCh{$lecture$ de $lectures$}{
           \Pour{$i = 0;\ i + k \le |lecture|;\ i += 1$}{
             $kmer = lecture[i:k]\;$
@@ -221,7 +221,7 @@ Bioinformatique, découverte de motifs entre des ensembles de fragments d’ADN}
         \caption{kmersExpand}
       }\end{algorithm}
       \begin{algorithm}[H]{
-        \Entree{chaîne $kmer$, chaîne $nvKmer$, chaîne $motif$, entier $posMotif$, entier $posKmer$}
+        \Entree{mot $kmer$, mot $nvKmer$, mot $motif$, entier $posMotif$, entier $posKmer$}
         \lSi{$posSeed == |motif|$}{$affiche(nvKmer)$}
         \lSinonSi{$motif[posMotif] \ne 0$}{$kmersExpandRec(kmer, nvKmer + kmer[posKmer], posMotif+1, posKmer+1)$}
         \Sinon{
@@ -235,64 +235,130 @@ Bioinformatique, découverte de motifs entre des ensembles de fragments d’ADN}
       \large
       L'approche adoptée pour kmersExpand a été différente, en effet, du à la manière dont les k-mers sont construits et à cause de l'explosion de RAM du précédent programme, la technique employée par kmersDel ne pouvait pas fonctionner ici.\\
 
-      Etant donné qu'il y a quatre nucléotides possible par $0$ du motif, on a $(L - k + 1 )*4^t$ $k$-mers possibles, ce qui développe de façon exponentielle les résultats. Afin de ne pas saturer la RAM, l'approche actuelle, malgré son côté récursif, est très peu gourmande en mémoire car elle ne stocke aucun des kmers obtenus mais les affiche immédiatement. De plus, l'algorithme utilise des \textit{mutex} afin de séparer l'affichage des différents threads (ce qui ralenti davantage l'exécution).\\
+      Etant donné qu'il y a quatre nucléotides possible par $0$ du motif, nous avons $(L - k + 1)*4^t$ $k$-mers possibles, ce qui développe de façon exponentielle les résultats. Afin de ne pas saturer la RAM, l'approche actuelle, malgré son côté récursif, est très peu gourmande en mémoire car elle ne stocke aucun des $k$-mers obtenus mais les affiche immédiatement. De plus, l'algorithme utilise des \textit{mutex} afin de séparer l'affichage des différents threads (ce qui ralentit davantage l'exécution).\\
 
-      En conséquence, l'algorithme est bien plus lent que kmersDel, cependant, la taille du fichier n'influe pas sur la quantité de RAM utilisée, ce qui en fait un outil utilisable en pratique.
+      En conséquence, l'algorithme est bien plus lent que kmersDel, cependant, la longueur du fichier n'influe pas sur la quantité de RAM utilisée, ce qui en fait un outil utilisable en pratique.
       \newpage
   \chapter{Autres pistes de recherche}
-    \section{Mot Minimaux Absents (MAWs)}
-    \begin{frame}[fragile]{Mots Minimaux Absents (MAWs)}
-      Toujours dans l'optique d'identifier les erreurs sur les lectures longues, nous avons étudiés les Mots Minimaux Absents.
+    \section{Mot Minimaux Absents (MAW)}
+    \begin{frame}[fragile]{Mots Minimaux Absents (MAW)}
+      Toujours dans l'optique d'identifier les erreurs sur les lectures longues, nous avons étudié les Mots Minimaux Absents.
       \begin{defgt}
         Un mot minimal absent d'une séquence est un mot absent dont les facteurs propres (plus long suffixe et plus long prefixe) sont tous présents dans la séquence.
       \end{defgt}
-      \textbf{Ex} : Avec la séquence $s = AACACACC$, on obtient les mots minimaux absents \{AAA, AACACC, AACC, CAA, CACACA, CCA, CCC\}\\
+      \textbf{Ex} : Avec la séquence $s = AACACACC$, nous obtenons les mots minimaux absents $\{AAA, AACACC, AACC, CAA, CACACA, CCA, CCC\}$.\\
 
-      Le but de l'extraction des mots minimaux absents est d'observer leur fréquence d'apparition au sein des lectures longues, afin de pouvoir identifier les séquences qui aurait dûe apparaître et qui sont absentes.\\
+      Le but de l'extraction des mots minimaux absents est d'observer leur fréquence d'apparition au sein des lectures longues, afin de pouvoir identifier les séquences qui auraient du apparaître et qui sont absentes.\\
 
-      Il y a plus de 13 millions de MAWs dans les lectures longues.\\
+      Il y a plus de 13 millions de MAW dans les lectures longues.\\
 
       Ceux avec une haute fréquence d’apparition (1k-10k) sont assez courts, et sont des séquences apparaissant correctement dans les lectures courtes et le génome de référence, mais n’apparaissant pas dans de nombreuses lectures longues, probablement à cause erreurs d'insertions/délétion.\\
 
       Ceux avec une faible fréquence d’apparition (< 1k) sont plus longs et sont, pour beaucoup, des séquences n’apparaissant pas dans les lectures courtes ni dans le génome de référence
-      \newpage
     \end{frame}
     \section{Plus long sous-mot commun (PLSC)}
-      L'étude des sous-mots est analogue à l'étude des insertions/délétion dans les lectures longues. En effet:
+      L'étude des sous-mots est analogue à l'étude des insertions/délétion dans les lectures longues. En effet :
       \begin{defgt}
         Un mot $x$ est un \textbf{sous-mot} d'un mot $y$ s'il existe une factorisation $y=z_{0}x_{1}z_{1}x_{2}\cdots x_{n}z_{n}$ telle que $x=x_{1}x_{2}\cdots x_{n}$.
       \end{defgt}
-      Par exemple, $x = AAAAC$ est un sous-mot de $y = \red{AA}C\red{A}C\red{AC}C$.\\
+      Par exemple, $x = AAAAC$ est un sous-mot de $y = \mathbf{AA}C\mathbf{A}C\mathbf{AC}C$.\\
 
-      Cela implique qu'un sous-mot $x$ d'une séquence $y$ est 
+      Cela implique qu'on peut obtenir $x$ à partir de la séquence $y$ en supprimant certaines nucléotides, mais également que l'on peut obtenir $y$ à partir de $x$ en insérant certaines nucléotides.\\
+
+      À partir de ce constat, nous allons à présent à chercher à comparer deux lectures longues entre elles grâce à leur PLSC, afin de déterminer quels sont les insertions ou délétion nécessaire afin que ces deux séquences soient similaires.
       \begin{defgt}
-        Le plus long sous-mot commun à deux séquences $x$ et $y$ est le mot $z$ tel que $z$ soit le plus long sous-mot à la fois dans $x$ et dans $y$.
+        Le Plus Long Sous-mot Commun (PLSC) à deux séquences $x$ et $y$ est le mot $z$ tel que $z$ soit le plus long sous-mot à la fois dans $x$ et dans $y$.
       \end{defgt}
-      Par exemple, le plus long sous-mot commun aux séquences $x = \red{ACCA}A\red{C}$ et $y = A\red{AC}A\red{CAC}C$ est $ACCAC$\\.\\
+      Par exemple, le plus long sous-mot commun aux séquences $x = \mathbf{ACCA}A\mathbf{C}$ et $y = A\mathbf{AC}A\mathbf{CAC}C$ est $ACCAC$\\.\\
+
+      En cherchant le PLSC entre une lecture longue brute et une lecture longue corrigée, nous pourrions établir les modifications opérées afin d'avoir pu corriger la lecture initiale.
     \newpage
   \chapter{Résultats obtenus}
+    \section{Données étudiées}
+      \begin{center}
+        \includegraphics[height=70mm]{acineto}
+      \end{center}
+      Le génome sur lequel se sont portés nos expériences est l'espèce de l'\textit{Acinetobacter baylyi}. Cet organisme possède un génome plutôt petit, d'environ 3 600 000 nucléotides.\\
+
+      \begin{center}
+        \includegraphics[height=50mm]{sequenceur_minion}
+      \end{center}
+      Les lectures longues utilisées sont celles issues du séquenceur MinION de Oxford Nanopore. Ce séquenceur a pour intérêt d'être très peu cher comparé aux normes du marché (\$1 000 au lieu de plusieurs dizaines de milliers de dollards) et d'être compacte, ne nécessitant qu'un port USB pour fonctionner.\\
+
+      Les lectures longues ainsi extraites ont cependant près de 30\% d'erreurs par rapport au génome de référence. En tout, elles ont produit 89 011 lectures longues avec une longueur moyenne de 4300 nucléotides.
     \section{kmersDel et kmersExpand}
-      Ici on a utilisé kmersDel et kmersExpand en les groupant afin de reproduire les erreurs d'insertion et de suppression des lectures longues. Différents paramètres ont été essayé:
+      Ici nous avons utilisé kmersDel et kmersExpand en les groupant avec les $k$-mers contigus afin de simuler des corrections aux erreurs d'insertion et de suppression des lectures longues.\\
+
+      Il est important de noter qu'énormément des $k$-mers obtenus dans les lectures longues n'apparaissent pas dans le génome de référence. En effet le génome de référence ne contient, par exemple, que $\simeq$ 3 500 000 16-mers, alors que l'on obtient plus de 1 000 000 000 16-mers dans les lectures obtenues par le séquenceur MinION (0,20\% - 0,40\%). Cela implique que beaucoup de $k$-mers ne sont pas utiles à la correction des lectures longues.\\
+
+      Sachant cela, nous avons étudié différents paramètres :
       \begin{itemize}
-        \item 16
+        \item $16$-mers, $freq = 5$, un trou de longueur 1 $\rightarrow 87\%$ des bons k-mers trouvés
+        \item $16$-mers, $freq = 5$, un trou de longueur 1 à 2 $\rightarrow 98\%$ des bons k-mers trouvés
       \end{itemize}
-  1.1 16-mers, un trou d’emplacement variable, freq = 5
-=> En ne gardant qu’un trou, mais en le déplaçant (ex : 1011, 1101), on obtient des
-k-mers différents
-En faisant l’union des 16-mers étendus, et des 16-mers espacés des LR, avec un trou
-de taille fixe et d’emplacement variable :
-Trou de longueur 1 :
-Environ 800 millions de 16-mers espacés / étendus dans les LR
-3 092 709 16-mers trouvés dans les SR
-3 536 267 16-mers contigus dans les SR
-Trou de longueur 1 à 2 :
-Environ 1 million 500 mille 16-mers espacés / étendus dans les LR
-3 461 162 16-mers trouvés dans les SR
-3 536 267 16-mers contigus dans les SR
-=> Tout les k-mers sont quasiment trouvés, mais impossible de déterminer les bons /
-mauvais en jouant sur les seuils de fréquence
+
+      Un fort pourcentage des bons $k$-mers est donc trouvé, mais ils sont noyés dans la quantité importante de k-mers inutiles, et il n'a pas été possible de les filtrer.\\
+
+      Des résultats similaires ont été observés sur d'autre longueur de $k$-mers, notamment sur les $20$-mers et $11$-mers. Enfin, afin de vérifier si l'information extraite serait plus intéressante si les lectures fournies en entrée étaient plus précises, nous avons également remplacé nos données Oxford Nanopore par des lectures longues de Pacific Biosciences, possédant uniquement 15\% d'erreur. Cela n'a cependant pas amélioré nos résultats.
+
+    \section{Mots Minimaux Absents (MAW)}
+      Les Mots Minimaux Absents avec une haute fréquence d’apparition dans les lectures longues (1k-10k) sont assez courts, et sont des séquences apparaissant correctement dans le génome de référence. Ils n'apparaissent pas dans un grand nombre de lectures longues, probablement à cause des nombreuses erreurs d'insertion/délétion.\\
+
+      Les Mots Minimaux Absents avec une faible fréquence d’apparition (< 1k) sont plus longs et sont, pour beaucoup, des séquences n’apparaissant pas dans le génome de référence.\\
+
+      Pour les tests suivants, nous éliminons les MAW inclus dans d’autres. La longueur moyenne d'un MAW est de 8,96 nucléotide, et nous récupérons 202 373 MAW.\\
+
+      En ne conservant que les $k$-mers contenant au moins un MAW, nous n'obtenons pas de bons résultats, presque tous les $k$-mers contiennent au moins un MAW. Le constat est similaire en filtrant les MAW trop courts (avec une longueur < 9) : seuls 3000 mauvais k-mers des lectures longues ne contiennent aucun MAW. À l'inverse, en augmentant la longueur minimale d'un MAW (même à 10), nous n'obtenons que trop peu de MAW, donc trop de $k$-mers ne contiennent aucun MAW, et nous passons à côté de beaucoup de bons $k$-mers.\\
+
+      En regardant le nombre de MAW présent dans chaque k-mer, après filtration des MAW de longueur < 9, nous obtenons une moyenne presque constante de 7 MAW par 16-mer, que les MAW soient recherchés sur des lectures longues, courtes, erronées ou correctes.\\
+
+      En regardant la couverture des $k$-mers par les MAW, cela n'est pas plus concluant, bons et mauvais k-mers couvrent le génome de référence à peu près de la même façon. Cela s'explique car presque tous les 8-9-10-11-mers sont présents dans le génome de référence.\\
+
+      Nous en avons conclu qu'il faut pouvoir essayer des MAW de plus grandes tailles, ce qui nous tourne donc vers les MAW non-fréquents ou rares. Malheureusement, les MAW rares ne sont pas assez nombreux et sont présent de façon trop homogène dans les bons et les mauvais $k$-mers, ce qui les rend difficilement utilisable.
+
+    \section{Résultats : CompaReads et Plus Long Sous-mot Commun}
+      Nous avons utilisé un outil nommé CompaReads\cite{CompaReads2012} qui permet de tenter d'aligner des lectures longues avec le génome de référence.\\
+
+      Le but de l'utilisation de cet outil est d'identifier les lectures longues provenant d'une même région du génome de référence.\\
+
+      Afin d'atteindre cet objectif, nous avons suivi la procédure de test suivante :
+      \begin{enumerate}
+        \item Sélection d'une lecture longue
+        \item Récupération des lectures longues similaires
+        \item Recherche de la lecture longue corrigée correspondante
+        \item Vérifier qu'elles s'alignent bien sur la même région du génome
+      \end{enumerate}\bigskip
+      En suivant cette procédure, nous avons sélectionné deux $20$-mers apparaissant fréquemment dans les lectures longues.\\
+
+      Avec cela, nous avons obtenu 25 lectures longues similaires aux deux choisies.\\
+
+      Enfin, nous avons récupéré les lectures longues corrigées correspondantes (corrigées par HG-CoLoR\cite{Morisse2017}), qui sont au nombre de 11.\\
+
+      Parmi ces 11 lectures corrigées, 8 d'entre elles s'alignent correctement sur la même région du génome.\\
+
+      Nous avons couplé cet outil avec la méthode du Plus Long Sous-Mot Commun. Après avoir calculé le PLSC entre deux séquences, nous pouvons chercher à l'aligner pour tenter de voir si la correction d'une lecture longue pouvait s'apparenter à la création du PLSC.\\
+
+      Nous avons effectué les différents tests suivants :
+      \begin{itemize}
+        \item Deux lectures longues similaires entre elles : pas d'alignement sur le génome\\
+        \item Entre 1 lecture brute et son équivalente corrigée : très mauvais alignement\\
+        \item Entre 2 lectures corrigées similaires : l'alignement s'effectue très bien\\
+      \end{itemize}
+      Ces résultats montrent que le PLSC entre deux lectures corrigées s'aligne très bien, mais qu'il ne permet pas, à lui seul, d'identifier les erreurs d'insertions/délétion, vu que le PLSC ne fonctionne pas avec les lectures non-corrigées.\\
+
+      Si nous testons avec le PLSC des $32$-mers ou des $64$-mers des lectures longues similaires, les résultats ne sont pas convaincant non plus, car aucun des PLSC ne parvient à s'aligner.
+    \newpage
   \chapter{Conclusion}
-    Peu de bon resultats, a part kmersExpand, beaucoup de choses à revoir.
+    Sur l'ensemble des pistes de corrections des lectures longues elles-mêmes, une grande partie d'entre elles n'ont pas donné les résultats escomptés.\\
+
+    Cependant, étant donné le succès de kmersDel et kmersExpand à trouver presque tous les $k$-mers du génome, quelques pistes peuvent être encore explorées :\\
+    \begin{itemize}
+      \item Marquer les $k$-mers de leur méthode d'obtention d'origine (ex :5ème nucléotide supprimée, 3ème ajoutée...) afin d'obtenir une 'carte d'identité' du $k$-mer et d'ainsi pouvoir retracer son origine\\
+      \item Dans la même veine d'idée, en retraçant l'origine des $k$-mers, nous pourrions mettre en place un lot de règles précises sur la position moyenne des nucléotides supprimées, ou un motif récurrent dans l'insertion de nucléotide
+    \end{itemize}\medskip
+    Les progrès de la technologie MinION de Oxford Nanopore et sa plus grande accessibilité en terme de coûts en font une technologie d'avenir. Oxford Nanopore est toujours en train d'améliorer son produit et fourni même des résultats sur les lectures longues à hauteur de 90\% de nucléotides correctes.\\
+
+    Les lectures longues sont également un système de fragmentation de l'ADN qui sera très important dans les années à venir, de par la reconstruction plus aisée du génome, permit par les plus grands chevauchements de ces lectures.
     \newpage
   \bibliographystyle{unsrt}
   \bibliography{biblio}

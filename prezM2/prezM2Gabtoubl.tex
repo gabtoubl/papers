@@ -13,7 +13,7 @@
 \date{\formatdate{03}{07}{2017}}
 \author{Gabriel Toublanc}
 \institute{
-  Université de Rouen, U.F.R des Sciences et Techniques de Saint-Etienne-du-Rouvray, LITIS EquipeTIBS\medskip\\
+  Université de Rouen, U.F.R des Sciences et Techniques de Saint-Étienne-du-Rouvray, LITIS EquipeTIBS\medskip\\
   Encadrants : Thierry Lecroq et Arnaud Lefebvre
 }
 \titlegraphic{%
@@ -97,7 +97,7 @@
 
 \begin{frame}[fragile]{Corrections des lectures longues}
   \textbf{Lectures courtes} : problème de couverture du génome\medskip\pause\\
-  \textbf{Lectures longues} : problème de taux d'erreur de lecture :\pause
+  \textbf{Lectures longues} : problème de taux d'erreur de lecture\pause
   \begin{itemize}[<+-| alert@+>]
     \item Oxford Nanopore : 30\% d'erreurs
     \item Pacific BioSciences : 15\% d'erreurs
@@ -284,12 +284,12 @@
   \normalsize
 \end{frame}
 
-\begin{frame}[fragile]{Mots Minimaux absents (MAW)}
+\begin{frame}[fragile]{Mots Minimaux Absents (MAW)}
   \begin{defgt}
-    Un mot minimal absent d'une séquence est un mot absent dont les facteurs propres (plus long suffixe et plus long préfixe) sont tous présents dans la séquence.
+    Un mot minimal absent d'une séquence est un mot absent dont les facteurs propres (plus long suffixe propre et plus long préfixe propre) sont tous présents dans la séquence.
   \end{defgt}
   \pause
-  Avec la séquence \only<-2>{$s = AACACACC$}\only<3>{$s = \red{AACAC}ACC$}\only<4>{$s = AAC\red{ACACC}$}, on obtient les mots minimaux absents suivants :\\
+  Avec la séquence \only<-2>{$s = AACACACC$}\only<3>{$s = \red{AACAC}ACC$}\only<4>{$s = AAC\red{ACACC}$}, on obtient les Mots Minimaux Absents suivants :\\
   \{AAA, \only<-2>{AACACC}\only<3>{\red{AACAC}C}\only<4>{A\red{ACACC}}, AACC, CAA, CACACA, CCA, CCC\}
 \end{frame}
 
@@ -318,13 +318,13 @@
   \end{center}
   \begin{itemize}[<+-| alert@+>]
     \item Espèce étudiée: \textit{Acinetobacter baylyi}
-    \item Taille du génome: $\simeq$ 3.6 Mb
-    \item Lectures longues: 89 011, de longueur moyenne $\simeq$ 4 300 nucléotides
+    \item Taille du génome : $\simeq$ 3 600 000 nucléotides
+    \item Lectures longues : Oxford Nanopore (30\% d'erreur) : 89 011, de longueur moyenne $\simeq$ 4 300 nucléotides
   \end{itemize}
 \end{frame}
 \begin{frame}[fragile]{Résultats : kmersDel et kmersExpand}
   Union des $\textit{k}$-mers + $\textit{k}$-mers à délétion + $\textit{k}$-mers à insertion\medskip\\\pause
-  Enormément de $k$-mers inutiles dans les lectures longues (0.23\% à 0.44\% d'utile)\pause
+  Enormément de $k$-mers inutiles dans les lectures longues (0,23\% à 0,44\% d'utile)\pause
   \begin{itemize}[<+-| alert@+>]
     \item $16$-mers, $freq = 5$, un trou de longueur 1 $\rightarrow 87\%$
     \item $16$-mers, $freq = 5$, un trou de longueur 1 à 2 $\rightarrow 98\%$
@@ -335,12 +335,12 @@
   Résultats similaires avec les lectures Pacific Biosciences et Oxford Nanopore.
 \end{frame}
 
-\begin{frame}[fragile]{Résultats : Mots Minimaux absents (MAW)}
-  Recherche de mots minimaux absents fréquents :\pause
+\begin{frame}[fragile]{Résultats : Mots Minimaux Absents (MAW)}
+  Recherche de Mots Minimaux Absents fréquents :\pause
   \begin{itemize}
     \item Pas concluant, repartition des MAW dans les bons/mauvais $k$-mers trop homogène
   \end{itemize}\pause
-  Recherche de mots minimaux absents rares:\pause
+  Recherche de Mots Minimaux Absents rares:\pause
   \begin{itemize}
     \item Pas concluant, mêmes résultats que pour les MAW fréquents
   \end{itemize}
@@ -361,6 +361,7 @@
     \item 11 lectures récupérées dont 8 s'alignent sur la même région du génome.
   \end{itemize}\bigskip
 \end{frame}
+
 \begin{frame}[fragile]{Résultats : Plus long sous-mot commun (PLSC)}
   Extractions de PLSC entre lectures longues similaires :\pause
   \begin{itemize}[<+-| alert@+>]
