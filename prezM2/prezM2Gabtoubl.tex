@@ -9,7 +9,7 @@
 \usetikzlibrary{calc, fit, decorations.pathreplacing}
 
 \title{Stage de Master IGIS ITA}
-\subtitle{$K$-mer et $k$-mer espacés}
+\subtitle{Bioinformatique, découverte de motifs entre des ensembles de fragments d’ADN}
 \date{\formatdate{03}{07}{2017}}
 \author{Gabriel Toublanc}
 \institute{
@@ -43,6 +43,17 @@
 \maketitle
 \metroset{block=fill}
 
+\begin{frame}[fragile]{Table des matières}
+  \Large
+  \begin{enumerate}[<+-| alert@+>]
+    \item Introduction
+    \item K-mers et k-mers espacés
+    \item Implémentations
+    \item Résultats obtenus
+    \item Conclusion
+  \end{enumerate}
+\end{frame}
+
 \section{Introduction}
 \begin{frame}[fragile]{Le séquençage ADN}
   \setbeamercovered{invisible}
@@ -52,8 +63,8 @@
       \onslide<2->{\includegraphics[height=30mm]{sequenceur_minion}}
     \end{tabular}\end{center}
     \begin{itemize}[<+-| alert@+>]
-      \item Lectures courtes (depuis 2005, Illumina, Roche, ...)
-      \item Lectures longues (depuis 2010, Oxford Nanopore, Pacific Biosciences)
+      \item Lectures courtes (depuis 2005, 20 à 300 nucléotides, Illumina, Roche, ...)
+      \item Lectures longues (depuis 2010, 3k à 20k nucléotides, Oxford Nanopore, Pacific Biosciences)
     \end{itemize}
   \end{overprint}
 \end{frame}
@@ -91,14 +102,14 @@
     \item Oxford Nanopore : 30\% d'erreurs
     \item Pacific BioSciences : 15\% d'erreurs
   \end{itemize}\pause
-  \textbf{Une solution} : corriger les lectures longues avec les lectures courtes (< 1\% d'erreur, cf. \textbf{HG-CoLoR}\cite{Morisse2017}).\medskip\pause\\
+  \textbf{Une solution} : corriger les lectures longues avec les lectures courtes (< 1\% d'erreur, voir \textbf{HG-CoLoR}\footnote{Pierre Morisse, Thierry Lecroq and Arnaud Lefebvre\cite{Morisse2017}}).\medskip\pause\\
   \textbf{Notre solution} : tenter de corriger les lectures longues directement.
 \end{frame}
 
-\section{Extraction des $k$-mers}
+\section{$K$-mers et $k$-mers espacés}
 \begin{frame}[fragile]{Extraction des $k$-mers}
-  Les $k$-mers sont des facteurs de taille $k$ de séquences d'ADN.\medskip\\\pause
-  \textbf{Ex} : Avec la séquence $s = AACCGGTT$, on obtient les $k$-mers de taille $6$ ($6$-mers) suivants :\\\pause
+  Les $k$-mers sont des facteurs de longueur $k$ de séquences d'ADN.\medskip\\\pause
+  \textbf{Ex} : Avec la séquence $s = AACCGGTT$ de longueur $L$, on obtient les $k$-mers de longueur $6$ ($6$-mers) suivants :\\\pause
   \begin{center}\begin{tikzpicture}
     \coordinate (s) at (0, 2);
     \foreach \xi [count=\i] in {\mathbf{k_1 :}, A, A, C, C, G, G, T, T} {
@@ -128,7 +139,7 @@
   \textbf{Ex} : Avec la séquence $s=AACCGGTT$...\pause
   \begin{itemize}[<+-| alert@+>]
     \item et le motif $m=10100111$, on obtient le $5$-mers espacé à délétion $ACGTT$
-    \item et le motif $m=10011$, on obtient les $5$-mers espacé à insertion $\{AAACC, AACCC...\}$
+    \item et le motif $m=10011$, on obtient les $5$-mers espacé à insertion $\{AAAAC, AACACC...\}$
   \end{itemize}
 \end{frame}
 \begin{frame}[fragile]{$K$-mers espacés à délétion}
@@ -162,7 +173,7 @@
 \end{frame}
 \begin{frame}[fragile]{$K$-mers espacés à insertion}
   Utilisé afin de simuler des corrections aux erreurs de délétion sur les lectures longues.\medskip\\\pause
-  $\mathbf{(L - k + 1)*4^t}$ $k$-mers espacés à insertion possibles.\medskip\\\pause
+  $\mathbf{(L - k + 1)*4^t}$ $k$-mers espacés à insertion possibles, avec $t = $nombre de 0 dans le motif.\medskip\\\pause
   \textbf{Ex} : Avec la séquence $\mathbf{s = AACCGGTT}$ et le motif $\mathbf{m = 111011}$, on obtient les $6$-mers espacés suivants :\\\pause
   \begin{center}\begin{tikzpicture}
     \coordinate (s) at (0, 3);
@@ -195,22 +206,22 @@
   \end{tikzpicture}\end{center}
 \end{frame}
 
-\section{Implémentation : KmersDel}
-\begin{frame}[fragile]{Implémentation : KmersDel}
-  L'outil \textbf{Jellyfish}\cite{Marcais2011} est la référence pour l'extraction de $k$-mers contigus.\medskip\\\pause
-  Pour les $k$-mers espacés à délétion, l'outil \textbf{Gkampi}\cite{Mancheron} est en cours de développement.\medskip\\\pause
-  Les programmes kmerDel et kmerExpand, développés en C++11 \textit{multi-thread}, traitent les $k$-mers à délétion et insertion.\medskip\\\pause
+\section{Implémentations}
+\begin{frame}[fragile]{Implémentation : kmersDel}
+  \textbf{Jellyfish}\footnote{Guillaume Marcais and Carl Kingsford\cite{Marcais2011}} est la référence pour l'extraction de $k$-mers contigus.\medskip\\\pause
+  Pour les $k$-mers espacés à délétion, l'outil \textbf{GkAmpi}\footnote{Alban Mancheron\cite{Mancheron}} est en cours de développement.\medskip\\\pause
+  Les programmes kmersDel et kmersExpand, développés en C++11 \textit{multi-thread}, traitent les $k$-mers à délétion et insertion.\medskip\\\pause
   Deux versions de kmersDel existent:\pause
   \begin{itemize}[<+-| alert@+>]
-    \item Une renommée kmerCount, favorisant la vitesse en dépit de l'utilisation de la mémoire
-    \item L'autre, kmerDel, est moins efficace mais peut être couplé à \textbf{Jellyfish} sur n'importe quelle taille de $k$-mers
-  \end{itemize}
+    \item Une renommée kmersCount, favorisant la vitesse en dépit de l'utilisation de la mémoire
+    \item L'autre, kmersDel, est moins efficace mais peut être couplé à \textbf{Jellyfish} sur n'importe quelle longueur de $k$-mers
+  \end{itemize}\bigskip
 \end{frame}
 
-\begin{frame}[fragile]{Implémentation : KmersDel}
+\begin{frame}[fragile]{Implémentation : kmersDel}
   \scriptsize
   \begin{algorithm}[H]{
-    \Entree{table\_hachage $table$, chaînes $lectures$, chaîne $motif$, entier $k$}
+    \Entree{table\_hachage $table$, mots $lectures$, mot $motif$, entier $k$}
     \pause
     \PourCh{$lecture$ de $lectures$}{
       \pause
@@ -239,26 +250,25 @@
   \normalsize
 \end{frame}
 
-\section{Implémentation : KmersExpand}
-\begin{frame}[fragile]{Implémentation : KmersExpand}
-  \textbf{\normalsize kmerExpand}
+\begin{frame}[fragile]{Implémentation : kmersExpand}
+  \textbf{\normalsize kmersExpand}
   \pause
   \scriptsize
   \begin{algorithm}[H]{
-    \Entree{chaînes $lectures$, chaîne $motif$, entier $k$}
+    \Entree{mots $lectures$, mot $motif$, entier $k$}
     \pause
     \PourCh{$lecture$ de $lectures$}{
       \pause
       \Pour{$i = 0;\ i + k \le |lecture|;\ i += 1$}{
         $kmer = lecture[i:k]$\;
-        $kmerExpandRec(kmer, motif, 0)$\;
+        $kmersExpandRec(kmer, motif, 0)$\;
       }
     }
   }\end{algorithm}
   \pause
-  \textbf{\normalsize kmerExpandRec}
+  \textbf{\normalsize kmersExpandRec}
   \begin{algorithm}[H]{
-    \Entree{chaîne $kmer$, chaîne $nvKmer$, chaîne $motif$, entier $posMotif$, entier $posKmer$}
+    \Entree{mot $kmer$, mot $nvKmer$, mot $motif$, entier $posMotif$, entier $posKmer$}
     \pause
     \lSi{$posSeed == |motif|$}{$affiche(nvKmer)$}
     \pause
@@ -274,17 +284,15 @@
   \normalsize
 \end{frame}
 
-\section{Implémentation: Mots Minimaux absents (MAWs)}
-\begin{frame}[fragile]{Mots Minimaux absents (MAWs)}
+\begin{frame}[fragile]{Mots Minimaux absents (MAW)}
   \begin{defgt}
-    Un mot minimal absent d'une séquence est un mot absent dont les facteurs propres (plus long suffixe et plus long prefixe) sont tous présents dans la séquence.
+    Un mot minimal absent d'une séquence est un mot absent dont les facteurs propres (plus long suffixe et plus long préfixe) sont tous présents dans la séquence.
   \end{defgt}
   \pause
   Avec la séquence \only<-2>{$s = AACACACC$}\only<3>{$s = \red{AACAC}ACC$}\only<4>{$s = AAC\red{ACACC}$}, on obtient les mots minimaux absents suivants :\\
-  \{AAA, \only<2>{AACACC}\only<3>{\red{AACAC}C}\only<4>{A\red{ACACC}}, AACC, CAA, CACACA, CCA, CCC\}
+  \{AAA, \only<-2>{AACACC}\only<3>{\red{AACAC}C}\only<4>{A\red{ACACC}}, AACC, CAA, CACACA, CCA, CCC\}
 \end{frame}
 
-\section{Implémentation: Plus long sous-mot commun}
 \begin{frame}[fragile]{Plus long sous-mot commun (PLSC)}
   \begin{defgt}
     Un mot $x$ est un \textbf{sous-mot} d'un mot $y$ s'il existe une factorisation $y=z_{0}x_{1}z_{1}x_{2}\cdots x_{n}z_{n}$ telle que $x=x_{1}x_{2}\cdots x_{n}$.
@@ -309,49 +317,49 @@
     \includegraphics[height=50mm]{acineto}
   \end{center}
   \begin{itemize}[<+-| alert@+>]
-    \item Espèce étudiée: Acinetobacter Baylyi
+    \item Espèce étudiée: \textit{Acinetobacter baylyi}
     \item Taille du génome: $\simeq$ 3.6 Mb
-    \item Lectures longues: 89 011, de longueur moyenne $\simeq$ 4 300
+    \item Lectures longues: 89 011, de longueur moyenne $\simeq$ 4 300 nucléotides
   \end{itemize}
 \end{frame}
-\begin{frame}[fragile]{Résultats : KmersDel et kmersExpand}
+\begin{frame}[fragile]{Résultats : kmersDel et kmersExpand}
   Union des $\textit{k}$-mers + $\textit{k}$-mers à délétion + $\textit{k}$-mers à insertion\medskip\\\pause
   Enormément de $k$-mers inutiles dans les lectures longues (0.23\% à 0.44\% d'utile)\pause
   \begin{itemize}[<+-| alert@+>]
-    \item $16$-mers, $freq = 5$, un trou de taille 1 $\rightarrow 87\%$
-    \item $16$-mers, $freq = 5$, un trou de taille 1 à 2 $\rightarrow 98\%$
+    \item $16$-mers, $freq = 5$, un trou de longueur 1 $\rightarrow 87\%$
+    \item $16$-mers, $freq = 5$, un trou de longueur 1 à 2 $\rightarrow 98\%$
   \end{itemize}
   \pause
-  Un grand nombre de $\textit{k}$-mers sont trouvés, mais impossible de les filter.\medskip\pause\\
-  Resultats similaires sur $20$-mers et $11$-mers\medskip\pause\\
-  Resultats similaires avec les lectures Pacific Biosciences et Oxford Nanopore.
+  Un grand nombre de $\textit{k}$-mers sont trouvés, mais impossible de les filtrer.\medskip\pause\\
+  Résultats similaires sur $20$-mers et $11$-mers\medskip\pause\\
+  Résultats similaires avec les lectures Pacific Biosciences et Oxford Nanopore.
 \end{frame}
 
-\begin{frame}[fragile]{Résultats : Mots Minimaux absents (MAWs)}
+\begin{frame}[fragile]{Résultats : Mots Minimaux absents (MAW)}
   Recherche de mots minimaux absents fréquents :\pause
   \begin{itemize}
-    \item Pas concluant, repartition des MAWs dans les bons/mauvais $k$-mers trop homogène
+    \item Pas concluant, repartition des MAW dans les bons/mauvais $k$-mers trop homogène
   \end{itemize}\pause
   Recherche de mots minimaux absents rares:\pause
   \begin{itemize}
-    \item Pas concluant, mêmes résultats que pour les MAWs fréquents
+    \item Pas concluant, mêmes résultats que pour les MAW fréquents
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Résultats : CompareReads}
+\begin{frame}[fragile]{Résultats : CompaReads\footnote{Nicolas Maillet, Claire Lemaitre, Rayan Chikhi, Dominique Lavenier and Pierre Peterlongo\cite{CompaReads2012}}}
   \textbf{But} : Identifier les lectures longues provenant d'une même région du génome de référence.\medskip\pause\\
   Procédure de test :\pause
   \begin{itemize}[<+-| alert@+>]
     \item Sélection d'une lecture longue
     \item Récupération des lectures longues similaires
     \item Recherche de la lecture longue corrigée correspondante
-    \item Vérifier qu'elles s'alignent bien sur la même région du génome de référence
+    \item Vérifier qu'elles s'alignent bien sur la même région du génome
   \end{itemize}\pause
-  \textbf{Résultat} : Avec deux $20$-mers fréquents => 25 LRs similaires\medskip\pause\\
+  \textbf{Résultat} : $20$-mers fréquents => 25 lectures longues similaires\medskip\pause\\
   Récupération des lectures longues corrigés correspondantes :\\
   \begin{itemize}
     \item 11 lectures récupérées dont 8 s'alignent sur la même région du génome.
-  \end{itemize}
+  \end{itemize}\bigskip
 \end{frame}
 \begin{frame}[fragile]{Résultats : Plus long sous-mot commun (PLSC)}
   Extractions de PLSC entre lectures longues similaires :\pause
@@ -366,12 +374,16 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Bibliographie}
-  \bibliographystyle{unsrt}
-  \bibliography{biblio}
+\section{Conclusion}
+\begin{frame}{Conclusion}
+  \begin{itemize}[<+-| alert@+>]
+    \item kmersDel et kmersExpand ont obtenus les meilleurs résultats
+    \item Marquer les k-mers afin de determiner les zones d'erreurs ou les motifs réguliers
+  \end{itemize}
 \end{frame}
 
-\begin{frame}[standout]
-  Conclusion
+\begin{frame}[allowframebreaks]{Bibliographie}
+  \bibliographystyle{unsrt}
+  \bibliography{biblio}
 \end{frame}
 \end{document}
