@@ -108,7 +108,7 @@
 
 \section{$K$-mers et $k$-mers espacés}
 \begin{frame}[fragile]{Extraction des $k$-mers}
-  Les $k$-mers sont des facteurs de longueur $k$ de séquences d'ADN.\medskip\\\pause
+  Les $k$-mers sont des facteurs de longueur $k$ de séquences d'ADN. Pour une séquence de longueur $L$, nous avons donc $\mathbf{(L - k + 1)}$ $k$-mers possibles\medskip\\\pause
   \textbf{Ex} : Avec la séquence $s = AACCGGTT$ de longueur $L$, on obtient les $k$-mers de longueur $6$ ($6$-mers) suivants :\\\pause
   \begin{center}\begin{tikzpicture}
     \coordinate (s) at (0, 2);
@@ -135,12 +135,7 @@
 \end{frame}
 \begin{frame}[fragile]{$K$-mers espacés}
   Les $k$-mers espacés sont des $k$-mers discontinus.\pause\medskip\\
-  On utilise un motif $m$ composé de zéros et de uns pour les représenter, où chaque zéro correspond à une insertion/délétion.\medskip\pause\\
-  \textbf{Ex} : Avec la séquence $s=AACCGGTT$...\pause
-  \begin{itemize}[<+-| alert@+>]
-    \item et le motif $m=10100111$, on obtient le $5$-mers espacé à délétion $ACGTT$
-    \item et le motif $m=10011$, on obtient les $5$-mers espacé à insertion $\{AAAAC, AACACC...\}$
-  \end{itemize}
+  On utilise un motif $m$ composé de zéros et de uns pour les représenter, où chaque zéro correspond à une insertion/délétion.
 \end{frame}
 \begin{frame}[fragile]{$K$-mers espacés à délétion}
   Utilisé afin de simuler des corrections aux erreurs d'insertions sur les lectures longues.\medskip\\\pause
@@ -286,7 +281,7 @@
 
 \begin{frame}[fragile]{Mots Minimaux Absents (MAW)}
   \begin{defgt}
-    Un mot minimal absent d'une séquence est un mot absent dont les facteurs propres (plus long suffixe propre et plus long préfixe propre) sont tous présents dans la séquence.
+    Un mot minimal absent d'une séquence est un mot absent dont les facteurs propres sont tous présents dans la séquence.
   \end{defgt}
   \pause
   Avec la séquence \only<-2>{$s = AACACACC$}\only<3>{$s = \red{AACAC}ACC$}\only<4>{$s = AAC\red{ACACC}$}, on obtient les Mots Minimaux Absents suivants :\\
@@ -324,13 +319,12 @@
 \end{frame}
 \begin{frame}[fragile]{Résultats : kmersDel et kmersExpand}
   Union des $\textit{k}$-mers + $\textit{k}$-mers à délétion + $\textit{k}$-mers à insertion\medskip\\\pause
-  Enormément de $k$-mers inutiles dans les lectures longues (0,23\% à 0,44\% d'utile)\pause
   \begin{itemize}[<+-| alert@+>]
     \item $16$-mers, $freq = 5$, un trou de longueur 1 $\rightarrow 87\%$
     \item $16$-mers, $freq = 5$, un trou de longueur 1 à 2 $\rightarrow 98\%$
-  \end{itemize}
-  \pause
-  Un grand nombre de $\textit{k}$-mers sont trouvés, mais impossible de les filtrer.\medskip\pause\\
+  \end{itemize}\pause
+  Un grand nombre de $\textit{k}$-mers sont trouvés, mais impossible de les filtrer, car énormément de $k$-mers inutiles dans les lectures longues (0,23\% à 0,44\% d'utile)\medskip\\\pause
+
   Résultats similaires sur $20$-mers et $11$-mers\medskip\pause\\
   Résultats similaires avec les lectures Pacific Biosciences et Oxford Nanopore.
 \end{frame}
@@ -377,6 +371,7 @@
 
 \section{Conclusion}
 \begin{frame}{Conclusion}
+  Perspectives:\medskip\pause
   \begin{itemize}[<+-| alert@+>]
     \item kmersDel et kmersExpand ont obtenus les meilleurs résultats
     \item Marquer les k-mers afin de determiner les zones d'erreurs ou les motifs réguliers
